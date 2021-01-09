@@ -1,0 +1,8 @@
+embed <drac2>
+
+#grabbing the alias name and prefix to display a propper help.
+n = ctx.prefix + ctx.alias
+
+# Displaying the help part.
+return f''' -title "Being an npc is hard, here is help." -desc "-Use `{n}` to display the npc of this channel.\n-Use `{n} add -name [name] -url [url]` to add an NPC to the channel that you are currently in.\n-Use `{n} show [name]` to show an NPC in another channel then it was added in.\n-You can delete an NPC from a channel by using `{n} delete` in the channel. Be careful as this action can not be undone"'''
+</drac2>
