@@ -1,0 +1,16 @@
+embed <drac2>
+
+# getting all the relevant variables
+c = ctx.channel.id
+n = ctx.prefix+ctx.alias
+u = load_json(get('NPCS'))
+
+# Setting up a back p so people don't lose NPCs on accident.
+base = f''' -title "You deleted {u[str(c)]["name"]} out of {ctx.channel}." -f "If this was unintentional use this command load the NPC again.|`{n} add -name {u[str(c)]["name"]} -url {u[str(c)]["url"]}`" '''
+
+#removing the NPC.
+u.pop(str(c))
+set_uvar("NPCS",dump_json(u))
+
+return base
+</drac2>
