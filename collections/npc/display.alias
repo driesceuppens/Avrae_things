@@ -1,0 +1,16 @@
+embed <drac2>
+
+# Getting the channel ID to connect the NPC to.
+c = ctx.channel.id
+
+# Creating the uvar if it does not exist yet. and loading it as a JSON.
+set_uvar_nx("NPCS", "{}")
+u = load_json(get('NPCS'))
+
+# Checking if there is an NPC in the channel.
+if str(c) not in u.keys():
+    err('No NPC set in this channel')
+    
+# Returning the name and url of the NPC to display in an embed.
+return f'-color {color} -title "' + u[str(c)]["name"].title() + f'" -image ' + u[str(c)]["url"]
+</drac2>
