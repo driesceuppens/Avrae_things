@@ -1,0 +1,37 @@
+tembed 
+
+<drac2>
+
+# making sure the NPCS uvar exists to prevent errors.
+if not uvar_exists('NPCS'):
+    err('Add NPSs to your NPC roster before showing them off.')
+
+# getting the name of the NPC to show.
+name = &ARGS&[0]
+
+# Checking if a name is given.
+if not name:
+    err('use -name when trying to display an NPC outside of their channel.')
+
+# making a list where the name and url of the NPCs are seperated.
+npc = NPCS.split(',')
+
+# Cleaning up the list to make sure only the name and URl remain.
+for i in range(len(npc)):
+  if i % 2 == 0:
+    npc[i] = npc[i][33:-1]
+  else:
+    npc[i] = npc[i][9:-2]
+
+# Since for some reason a random chracter shows up at the end of the list.
+npc[-1] = npc[-1][:-1]
+
+# making sure the name is an NPC the user has and grabbing the url for the name.
+if name in npc:
+  for i in range (len(npc)):
+    if npc[i] == name:
+      return f''' -title "{name.title()}" -image {npc[i+1]} '''
+
+# To tell if there is no NPC.
+return f''' -title "No NPCs with the name {name} exists." '''
+</drac2>
