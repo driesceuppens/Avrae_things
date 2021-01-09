@@ -1,0 +1,24 @@
+embed <drac2>
+
+# getting all the relevant variables
+c = ctx.channel.id
+u = load_json(get('NPCS'))
+args = argparse(&ARGS&)
+name = args.last('name')
+url = args.last('url')
+
+# making sure the NPC can be added
+if not name or not url:
+    err('Use -name and -url when settings a new NPC')
+
+# making sure the Channel does not already have an NPC.
+if str(c) in u.keys():
+  return f''' -title "You already have an npc in this channel, use another channel for this npc or delete it." -desc "You can't have two ncp's set to the same channel." -f "Your npc in this channel is|{u[str(c)]["name"]}" -image {u[str(c)]["url"]}'''
+
+# creating an new NPC
+newNPC = {"name": name, "url": url}
+u[c] = newNPC
+set_uvar("NPCS", dump_json(u))
+return f'-title "Your new NPC is {name}" -image {url} -color {color}'
+
+</drac2>
