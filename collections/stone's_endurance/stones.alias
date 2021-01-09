@@ -1,0 +1,25 @@
+embed <drac2>
+
+# Setting the relevant variables.
+ch,cc = character(), "Stone's Endurance"
+amount = vroll(f"1d12+{constitutionMod}")
+base = f''' -color {color} -thumb {image}  '''
+v = ch.cc_exists(cc)
+dmg = int(&*&)
+if dmg > amount.total:
+  heal = amount.total
+else:
+  heal = dmg
+if v and ch.get_cc(cc) > 0:
+  ch.mod_cc(cc, -1)
+  ch.modify_hp(heal, overflow=False)
+  current = str(ch.hp)
+  base += f''' -title "{name} uses their Stone's endurance to heal {heal}!" -f "Reduction|{amount}" -footer "{name}: <{ch.hp_str()} HP>" -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+elif ch.get_cc(cc) == 0:
+  base += f''' -title "{name} already used their Stone's endurance today!" -f "{cc}|{ch.cc_str(cc)}" '''
+else:
+  base += f''' -title "{name} tries to use stone's endurance!" -desc "You do not have this ability." '''
+  return base
+base += f''' -desc "You can focus yourself to occasionally shrug off injury. When you take damage, you can use your reaction to roll a d12. Add your Constitution modifier to the number rolled and reduce the damage by that total. After you use this trait, you can't use it again until you finish a short or long rest." -footer "{name}: <{character().hp_str()} HP>"  '''
+return base
+</drac2>
