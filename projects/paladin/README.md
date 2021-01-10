@@ -52,7 +52,7 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- Channel Divinity
 		- Watcher's Will: Done
 		- Adbjure the Extraplanar: not begun
-	- Vigilant Rebuke: not begun
+	- Vigilant Rebuke: Done
 	- Mortal Bulwark: not begun
 - Oathbreaker
 	- Channel divinity
@@ -61,7 +61,6 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- Dread Lord: not begun
 	
 ## Upcomming
-- Vigilant Rebuke
 - Mortal Bulwark
 
 IF you want me to work on something first let me know.
