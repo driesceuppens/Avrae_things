@@ -1,0 +1,55 @@
+!alias will embed <drac2>
+
+# Setting up the variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+args = argparse(&ARGS&)
+i = '-i' in &ARGS&
+lvl = get("PaladinLevel",0)
+sub = load_json(get('subclass','{"PaladinLevel": "The Watchers"}')).get('PaladinLevel','')
+cc = "Channel Divinity"
+
+# Getting all the targets.
+targs = args.get('t')
+
+# Setting up the variables for the `!pronouns` alias from @Lathoan#6694.
+they,them,their,theirs = get('they','they'),get('them','them'),get('their','their'),get('theirs','theirs')
+sthey,sthem = 's' if they != 'he' or they != 'she' else '','s' if them != 'him' or them != 'her' else ''
+
+# Setting up the requerments.
+v = (lvl>3 and sub == 'The Watchers') or i
+
+# Setting up the return arguments for the embed.
+base = f''' -thumb {image} -coor {color} '''
+
+# Making sure the ability can be used.
+if v:
+  if not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} Does not have any uses of {their} {cc} left." -f "{cc}|{ch.cc_str(cc)}" '''
+  base += f''' -title "{name} uses {their} Channel divinity!" -desc "You can use your Channel Divinity to invest your presence with the warding power of your faith. As an action, you can choose a number of creatures you can see within 30 feet of you, up to a number equal to your Charisma modifier (minimum of one creature). For 1 minute, you and the chosen creatures have advantage on Intelligence, Wisdom, and Charisma saving throws." '''
+  # If you're in combat adding the effecs onto the targets and yourself.
+  if com != None:
+    targs.append(name)
+    for j in targs:
+      j = c.get_combatant(j)
+      j.add_effect("Watchers will",'',duration=10,desc=" Advantage on wisdom, inteligence and charisma saving throws.")
+      base += f''' -f "{j.name}| Advantage on wisdom, inteligence and charisma saving throws." '''
+
+  # If you're not ignoring requirements a use is consumened.
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+    return base
+  else:
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+elif lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'The Watchers':
+  base += f''' -title "{name} did not swear the oath of the watchers." -footer "If you are a oath of the watchers paladin and use the `!level` alias make sure you are using `28b5f063-1188-4db3-9068-990152b2e459` gvar to sub to and the subclass is named `The Watchers`" '''
+else:
+   base += f''' -title "{name} is not yet a level 3 paladin." '''
+return base
+</drac2>
