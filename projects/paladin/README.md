@@ -53,14 +53,21 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 		- Watcher's Will: Done
 		- Adbjure the Extraplanar: not begun
 	- Vigilant Rebuke: Done
-	- Mortal Bulwark: not begun
+	- Mortal Bulwark: waiting for feature
 - Oathbreaker
 	- Channel divinity
-		- Control undead: not begun
+		- Control undead: waiting for feauture
 		- Dreadful aspect: not begun
 	- Dread Lord: not begun
 	
 ## Upcomming
-- Mortal Bulwark
+
+
+## waiting for features in Draconinc
+- Adding saves to attacks in an effect:
+	- Mortal bulwark
+- Acces to creaure type draconic.
+	- All the turn channel divinity.
+	- 
 
 IF you want me to work on something first let me know.
