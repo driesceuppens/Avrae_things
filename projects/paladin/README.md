@@ -10,8 +10,8 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 
 - Ancients
 	- channel
-		- nature's wrath: not begun
-		- turn the faithless: not begun
+		- nature's wrath: working on it
+		- turn the faithless: Waiting for feaure.
   - Undying Sentinel: Not begun.
   - Elder champion: not begun
 - Concuest
@@ -68,6 +68,6 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- Mortal bulwark
 - Acces to creaure type draconic.
 	- All the turn channel divinity.
-	- 
+	- turn the faithless.
 
 IF you want me to work on something first let me know.
