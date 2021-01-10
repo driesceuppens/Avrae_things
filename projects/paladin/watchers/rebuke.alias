@@ -1,0 +1,46 @@
+!alias Rebuke embed <drac2>
+
+# Setting the relevant variables.
+ch = character()
+c = combat()
+com = combat() and combat().me
+args = argparse(&ARGS&)
+i = '-i' in &ARGS&
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "The Watchers"}')).get('PaladinLevel','')
+cha = str(charismaMod)
+
+# getting the target.
+targ = args.last('t')
+
+# Setting up the variables for the `!pronouns` alias from @Lathoan#6694.
+they,them,their,theirs = get('they','they'), get('them','them'), get('their','their'), get('theirs','theirs')
+sthey,sthem = 's' if they != 'he' or they != 'she' else '','s' if them != 'him' or them != 'her' else ''
+
+# Setting up the requirements with the ability of removing requirments.
+v = (lvl>14 and sub == 'The Watchers') or i
+
+# Setting up the return arguments.
+base = f''' -thumb {image} -color {color} '''
+
+# Making sure it is used in combat.
+if not com:
+  base += f''' -title "{name} is not in combat." -desc "This ability can only be used in combat." '''
+
+# Executing the alias to damage the target.
+if v:
+  targ = c.get_combatant(targ)
+  dam = targ.damage("2d8",d=cha)
+  base += f''' -title "{name} uses {their} Vigilant Rebuke!" -desc "You've learned how to chastise anyone who dares wield beguilements against you and your wards. Whenever you or a creature you can see within 30 feet of you succeeds on an Intelligence, a Wisdom, or a Charisma saving throw, you can use your reaction to deal 2d8 + your Charisma modifier force damage to the creature that forced the saving throw." -f "{targ.name}|Damage: {dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
+
+# Exceptions for when the requirements are not met.
+elif lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'The Watchers':
+  base += f''' -title "{name} did not swear the oath of the watchers." -footer "If you are a oath of the watchers paladin and use the `!level` alias make sure you are using `28b5f063-1188-4db3-9068-990152b2e459` gvar to sub to and the subclass is named `The Watchers`" '''
+else:
+   base += f''' -title "{name} is not yet a level 15 paladin." '''
+
+# Returning the Arguments for the embed.
+return base
+</drac2>
