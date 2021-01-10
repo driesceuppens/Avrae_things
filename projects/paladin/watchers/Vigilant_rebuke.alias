@@ -28,10 +28,13 @@ if not com:
   base += f''' -title "{name} is not in combat." -desc "This ability can only be used in combat." '''
 
 # Executing the alias to damage the target.
-if v:
+if v and targ:
   targ = c.get_combatant(targ)
   dam = targ.damage("2d8",d=cha)
-  base += f''' -title "{name} uses {their} Vigilant Rebuke!" -desc "You've learned how to chastise anyone who dares wield beguilements against you and your wards. Whenever you or a creature you can see within 30 feet of you succeeds on an Intelligence, a Wisdom, or a Charisma saving throw, you can use your reaction to deal 2d8 + your Charisma modifier force damage to the creature that forced the saving throw." -f "{targ.name}|Damage: {dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
+  base += f''' -f "{targ.name}|Damage: {dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
+
+if v:
+  base += f''' -title "{name} uses {their} Vigilant Rebuke!" -desc "You've learned how to chastise anyone who dares wield beguilements against you and your wards. Whenever you or a creature you can see within 30 feet of you succeeds on an Intelligence, a Wisdom, or a Charisma saving throw, you can use your reaction to deal 2d8 + your Charisma modifier force damage to the creature that forced the saving throw." '''
 
 # Exceptions for when the requirements are not met.
 elif lvl == 0:
