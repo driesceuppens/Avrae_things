@@ -10,10 +10,10 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 
 - Ancients
 	- channel
-		- nature's wrath: working on it
+		- nature's wrath: Done
 		- turn the faithless: Waiting for feaure.
-  - Undying Sentinel: Not begun.
-  - Elder champion: not begun
+  - Undying Sentinel: working on.
+  - Elder champion: Done
 - Concuest
 	- Channel
 		- Conqering presence: not begun
@@ -32,10 +32,10 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- Holy nimbus: not begun
 - Glory
 	- Channel divinity
-		- Peerless athlete: not begun
-		- Inspireting smite: not begun
+		- Peerless athlete: Done
+		- Inspireting smite: Done
 	- Glorious defence: not begun
-	- Living legend: not begun
+	- Living legend: Done
 - Redemption
 	- Channel divinity
 		- Emissary of peace: not begun
@@ -61,7 +61,9 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- Dread Lord: not begun
 	
 ## Upcomming
+Unless I get requests from someone to focus on a subclass first I will work down the list. The execeptions will be, things that can't yet be fully automated, things that take a lot of effort. Those might be skipped.
 
+Working on: Oath of glory.
 
 ## waiting for features in Draconinc
 - Adding saves to attacks in an effect:
