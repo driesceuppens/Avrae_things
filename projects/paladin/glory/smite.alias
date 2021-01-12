@@ -1,0 +1,40 @@
+!alias isnpsmite embed <drac2>
+
+# Variables
+ch,i,lvl,sub,cc = character(),'-i' in &ARGS&, int(get("PaladinLevel",0)),load_json(get('subclass','{"PaladinLevel": "Glory"}')).get('PaladinLevel','').lower(),"Channel Divinity"
+
+# Pronouns
+their = get('their','their')
+
+# Requierments.
+v = (lvl>2 and sub == 'glory') or i
+
+# Setting up the return.
+base = f''' -thumb {image} -color {color} '''
+
+# Checking the stuff.
+if v:
+  base += f''' -title "{name} uses {their} Channel divinity!" -desc "Immediately after you deal damage to a creature with your Divine Smite feature, you can use your Channel Divinity as a bonus action and distribute temporary hit points to creatures of your choice within 30 feet of you, which can include you. The total number of temporary hit points equals 2d8 + your level in this class, divided among the chosen creatures however you like." '''
+  if not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} Does not have any uses of {their} {cc} left." -f "{cc}|{ch.cc_str(cc)}" '''
+  temp = vroll(f'2d8+{lvl}')
+  base += f''' -f "The Temp HP to distribute|{temp}" '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+    return base
+  else:
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+    return base
+
+# If you can't use the ability.
+elif lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'glory':
+  base += f''' -title "{name} did not swear the oath Glory." '''
+else:
+   base += f''' -title "{name} is not yet a level 3 paladin." '''
+return base
+</drac2>
