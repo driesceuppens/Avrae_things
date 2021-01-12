@@ -19,3 +19,5 @@ It uses the `!pronouns` alias but doesn't require it.
 - turn the faithless:
   Can't be done well yet will hopefully be done in the future.
 
+## Status for this subclass
+Done except for aliases that can't currently be done properly.
