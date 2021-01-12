@@ -12,7 +12,7 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- channel
 		- nature's wrath: Done
 		- turn the faithless: Waiting for feaure.
-  - Undying Sentinel: working on.
+  - Undying Sentinel: Done
   - Elder champion: Done
 - Concuest
 	- Channel
@@ -51,7 +51,7 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 - Watchers
 	- Channel Divinity
 		- Watcher's Will: Done
-		- Adbjure the Extraplanar: not begun
+		- Adbjure the Extraplanar: waiting on feature
 	- Vigilant Rebuke: Done
 	- Mortal Bulwark: waiting for feature
 - Oathbreaker
@@ -61,9 +61,13 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- Dread Lord: not begun
 	
 ## Upcomming
-Unless I get requests from someone to focus on a subclass first I will work down the list. The execeptions will be, things that can't yet be fully automated, things that take a lot of effort. Those might be skipped.
 
-Working on: Oath of glory.
+- Glorious defence:
+
+- Oath of the crown
+
+
+Unless I get requests from someone to focus on a subclass first I will work down the list. The execeptions will be, things that can't yet be fully automated, things that take a lot of effort. Those might be skipped.
 
 ## waiting for features in Draconinc
 - Adding saves to attacks in an effect:
@@ -71,5 +75,6 @@ Working on: Oath of glory.
 - Acces to creaure type draconic.
 	- All the turn channel divinity.
 	- turn the faithless.
+	- Adbjure the Extraplanar
 
 IF you want me to work on something first let me know.
