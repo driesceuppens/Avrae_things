@@ -1,0 +1,51 @@
+embed <drac2>
+
+# Variables.
+ch = character()
+c = combat()
+com = combat() and combat().me
+i = '-i' in &ARGS& 
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Glory"}')).get('PaladinLevel','').lower()
+cc = "Channel Divinity"
+
+# Setting up the pronouns.
+their = get('their','their')
+
+# Setting up the requirements.
+v = (lvl>2 and sub == 'glory') or i
+
+# setting up the return args.
+base = f''' -thumb {image} -color {color} '''
+
+# Checking the requirments.
+if v:
+  base += f''' -title "{name} uses {their} Channel divinity!" -desc "As a bonus action, you can use your Channel Divinity to augment your athleticism. For the next 10 minutes, you have advantage on Strength (Athletics) and Dexterity (Acrobatics) checks; you can carry, push, drag, and lift twice as much weight as normal; and the distance of your long and high jumps increases by 10 feet (this extra distance costs movement as normal)." '''  
+  if not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} Does not have any uses of {their} {cc} left." -f "{cc}|{ch.cc_str(cc)}" '''
+  if com != None:
+    j = c.me
+    j.add_effect("Peerless Athlete",'',duration=100,desc="Advantage on Strength(Athletics) and Dexerity(Acrobatics) checks; you can carry, push, drag, and lift twice as much weight as normal; and the distance of your long and high jumps increases by 10 feet. ")
+    base += f''' -f "{j.name}| Advantage on Strength(Athletics) and Dexerity(Acrobatics) checks\n- You can carry, push, drag, and lift twice as much weight as normal\n- The distance of your long and high jumps increases by 10 feet." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+    return base
+  else:
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+
+# If you're not a paladin.
+elif lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+
+# If your subclass isn't Glory.
+elif not sub == 'glory':
+  base += f''' -title "{name} did not swear the oath Glory." '''
+
+# If you're not yet level three.
+else:
+   base += f''' -title "{name} is not yet a level 3 paladin." '''
+return base
+</drac2>
