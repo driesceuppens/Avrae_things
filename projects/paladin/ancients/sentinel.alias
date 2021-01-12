@@ -1,0 +1,51 @@
+!alias sentinel embed <drac2>
+
+# variables
+ch = character()
+i = '-i' in &ARGS& 
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Ancients"}')).get('PaladinLevel','').lower()
+cc = "Undying Sentinel"
+hp = ch.hp
+
+# requirements
+v = (lvl > 14 and sub == 'ancients') or i
+
+# the return.
+base = f''' -thumb {image} -color {color} '''
+
+# Checking the variables
+if v:
+  # Adding the desc.
+  base += f''' -desc "Starting at 15th level, when you are reduced to 0 hit points and are not killed outright, you can choose to drop to 1 hit point instead. Once you use this ability, you can't use it again until you finish a long rest." '''
+  # Checking for remaining uses.
+  if ch.cc_exists(cc) and not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} remaining." -f "{cc}|{ch.cc_str(cc)}" '''
+  # Checking if they are dying.
+  if hp != 0:
+    return base + f''' -title "{name} is not dying!" -footer "{name}: <{ch.hp_str()} HP>" '''
+  # Seeting the hp.
+  character().set_hp(1)
+  # Adding the title and hp string.
+  base += f''' -title "{name} uses {cc}" -footer "{name}: <{ch.hp_str()} HP>"'''
+  # Checking if the cc needs to be modded.
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  else:
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+
+# If they can't use the ability returning why not.
+elif lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+
+elif sub != 'ancients':
+  base += f''' -title "{name} did not swear the oath of the Ancients." '''
+
+else:
+   base += f''' -title "{name} is not yet a level 15 paladin." '''
+return base
+</drac2>
