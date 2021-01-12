@@ -1,0 +1,57 @@
+embed <drac2>
+# variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+# The subclass so I can cehck if it's right, you need to use the right gvar to sub from.
+sub = load_json(get('subclass','{"PaladinLevel": "Glory"}')).get('PaladinLevel','').lower()
+cc = "Living Legend"
+
+# to be able to use slots instead of a counter. I was going to try to use a custom adv dict but it didn't fit in the 2000 character limit in that case.
+i = '-i' in &ARGS&
+slot = 'slot' in &ARGS&
+their = get('their','their')
+
+# Setting up the reqs
+v = (lvl == 20 and sub == 'glory') or i
+
+# Setting up the return
+base = f''' -thumb {image} -color {color} '''
+
+# Going to the requiremtens to do the things needed.
+if v:
+  # Checking for combat and to add the effects.
+  if com != None:
+    c.me.add_effect("Living Legend",'',duration=10,desc="Advantage on all Charisma checks.\n- Once on each of your turns when you make a weapon attack and miss, you can cause that attack to hit instead.\n- If you fail a saving throw, you can use your reaction to reroll it. You must use this new roll.")
+    base += f''' -f "{name}|- Advantage on all Charisma checks.\n- Once on each of your turns when you make a weapon attack and miss, you can cause that attack to hit instead.\n- If you fail a saving throw, you can use your reaction to reroll it. You must use this new roll." '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "DESC" '''
+  # if you want to use a slot, I'm assuming you are not trying to ignore requerments in this case.
+  if slot:
+    if ch.spellbook.get_slots(5) == 0:
+      return base + f''' -title "{name} has no spell slots of level 5 remaining!" -f "Spell Slots|{ch.spellbook.slots_str(5)}" '''
+    use_slot(5)
+    base += f''' -f "Spell Slots|{ch.spellbook.slots_str(5)}" '''
+  else:
+    if not i and v:
+      ch.mod_cc(cc,-1)
+      base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+    elif ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+
+# If you're not a paladin.
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+
+# If you don't have the right subclass
+elif not sub == 'glory':
+  base += f''' -title "{name} did not swear the oath Glory." '''
+
+# making sure it will always return something.
+else:
+   base += f''' -title "{name} is not yet a level 20 paladin." '''
+
+# Returning something.
+return base
+</drac2>
