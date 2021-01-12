@@ -1,0 +1,53 @@
+embed <drac2>
+
+# Getting the Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+i = '-i' in &ARGS& 
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Ancients"}')).get('PaladinLevel','').lower()
+cc = "Elder Champion"
+their = get('their','their')
+
+# Setting the requerments
+v = (lvl == 20 and sub == 'ancients') or i
+
+#setting up the args to return.
+base = f''' -thumb {image} -color {color} '''
+
+# Checking the requirementss.
+if v:
+  # Adding the description and title. (needs some work)
+  base += f''' -title "{name} uses {their} {cc}!" -desc "At 20th level, you can assume the form of an ancient force of nature, taking on an appearance you choose. For example, your skin might turn green or take on a bark-like texture, your hair might become leafy or moss-like, or you might sprout antlers or a lion-like mane.\n\nUsing your action, you undergo a transformation. For 1 minute, you gain the following benefits:\n\n- At the start of each of your turns, you regain 10 hit points.\n- Whenever you cast a paladin spell that has a casting time of 1 action, you can cast it using a bonus action instead.\n- Enemy creatures within 10 feet of you have disadvantage on saving throws against your paladin spells and Channel Divinity options." '''
+  # Checking if the cc needs to be modded and if there are uses remaining.
+  if not i:
+    # if there are no uses remaining then we return that.
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} Does not have any uses of {their} {cc} left." -f "{cc}|{ch.cc_str(cc)}" '''
+  # Checking if combat is active to give the effects.
+  if com != None:
+    c.me.add_effect("Living Legend",'',duration=10,desc="At the start of each of your turns, you regain 10 hit points.\n- Whenever you cast a paladin spell that has a casting time of 1 action, you can cast it using a bonus action instead.\n- Enemy creatures within 10 feet of you have disadvantage on saving throws against your paladin spells and Channel Divinity options.")
+    base += f''' -f "{name}|Regains 10 hp at the start of {their} turn.\nCan ast any paladinspell taking an action as a bonus action.\nEnemies in 10 feet of you have disadvantage on saving throws agains your spells and channel divinity options." '''
+  # Checking if the cc needs to be modded.
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+    return base
+  else:
+    # Checking if the cc exists to add it onto the alias.
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+
+# Returning why you can't use the ability.
+elif lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+
+elif not sub == 'ancients':
+  base += f''' -title "{name} did not swear the oath of the Ancients." '''
+
+else:
+   base += f''' -title "{name} is not yet a level 20 paladin." '''
+return base
+</drac2>
