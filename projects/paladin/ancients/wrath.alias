@@ -1,0 +1,58 @@
+embed <drac2>
+
+# Variables
+ch,c,com,args,i,lvl,sub,cc = character(),combat(), combat() and combat().me, argparse(&ARGS&),'-i' in &ARGS&, int(get("PaladinLevel",0)),load_json(get('subclass','{"PaladinLevel": "Ancients"}')).get('PaladinLevel','').lower(),"Channel Divinity"
+targ,dc,adv,save1 = args.last('t'),ch.spellbook.dc,args.adv(),str(args.last('save')).lower()
+
+# Making sure the adv is right.
+adv = [None,True,False][adv]
+
+# Pronouns
+their = get('their','their')
+
+# The requiremtns
+v = (lvl>2 and sub == 'ancients') or i
+
+# Setting up the return.
+base = f''' -thumb {image} -color {color} '''
+
+# Checking if they still have uses left.
+if ch.cc_exists(cc):
+  if ch.get_cc(cc) == 0 and not i:
+    return base + f''' -title "{name} has no uses of {their} {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" -desc "You can use your Channel Divinity to invoke primeval forces to ensnare a foe. As an action, you can cause spectral vines to spring up and reach for a creature within 10 feet of you that you can see. The creature must succeed on a Strength or Dexterity saving throw (its choice) or be restrained. While restrained by the vines, the creature repeats the saving throw at the end of each of its turns. On a success, it frees itself and the vines vanish." '''
+
+# Checking if the character can use the ability.
+elif lvl == 0 and not i:
+  return base + f''' -title "{name} is not a paladin!"'''
+  
+# Checking the subclass.
+if sub != "ancients" and not i:
+  return base + f''' -title "{name} did not swear the oath of the Ancients!" '''
+  
+# Checking to see it it's used in combat.
+if v and targ and com:
+  targ = c.get_combatant(targ)
+  saves = targ.saves
+  if not save1:
+    if max(saves.get('str').value,saves.get('dex').value) == saves.get('str').value:
+      save1 = 'str'
+    else:
+      save1 = 'dex'
+  save = targ.save(save1,adv)
+  if save.total < dc:
+    targ.add_effect("Restrained(Nature's Wrath)",'',10,desc="- At the end of each of its turns, the target can make another Strength or Dexterity saving throw./n- On a success the effect ends.")
+    base += f''' -f "{targ.name}|**{save1} save: **{save}; Failure!/n**Effect: **Restrained(Nature's Wrath)[10 rounds]/n- At the end of each of its turns, the target can make another Strength or Dexterity saving throw./n- On a success the effect ends." '''
+  else:
+    base += f''' -f "{targ.name}|**{save1} save: **{save}; Succes!" '''
+if v:
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to invoke primeval forces to ensnare a foe. As an action, you can cause spectral vines to spring up and reach for a creature within 10 feet of you that you can see. The creature must succeed on a Strength or Dexterity saving throw (its choice) or be restrained. While restrained by the vines, the creature repeats the saving throw at the end of each of its turns. On a success, it frees itself and the vines vanish." '''
+  if ch.cc_exists(cc):
+    change = ''
+    if not i:
+      ch.mod_cc(cc,-1)
+      change = '(-1)'
+    base += f''' -f "{cc}|{ch.cc_str(cc)} {change}" '''
+    
+# Returning the args for the embed.
+return base
+</drac2>
