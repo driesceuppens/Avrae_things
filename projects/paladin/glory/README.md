@@ -14,5 +14,3 @@ It uses the `!pronouns` alias but doesn't require it.
   
  ## Not done yet.
 - Glorious defence
-
-- Living legend
