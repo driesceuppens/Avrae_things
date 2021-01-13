@@ -70,6 +70,7 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	
 ## Upcomming
 
+
 - Glorious defence:
 
 - Oath of the crown
