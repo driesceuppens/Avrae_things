@@ -14,28 +14,33 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 		- turn the faithless: Waiting for feaure.
   - Undying Sentinel: Done
   - Elder champion: Done
+
 - Concuest
 	- Channel
 		- Conqering presence: not begun
 		- Guided strike: not begun
 	- Invincible Conquerer: not begun
+
 - crown
 	-  channel divinity
 		- Champion challenge: not begun
 		- Turn the tide: not begun
 	- Divine alegance: not begun
 	- Exhalted champion: not begun
+
 - Devotions
 	- Channel Divinity
 		- Sacret weapon: not begun
 		- Turn the unholy: not begun
 	- Holy nimbus: not begun
+
 - Glory
 	- Channel divinity
 		- Peerless athlete: Done
 		- Inspireting smite: Done
 	- Glorious defence: not begun
 	- Living legend: Done
+
 - Redemption
 	- Channel divinity
 		- Emissary of peace: not begun
@@ -43,17 +48,20 @@ Well isn't that obvious? it's my futile attempts at trying to make a full collec
 	- Aura of the guardian: not begun
 	- Protective spirit: not begun
 	- Emmisary of redemption: not begun
+
 - Vengance
 	- channel divinity
 		- Abjure Enemy: not begun
 		- Vow of Enmity: not begun
 	- Avenging angel: not begun
+
 - Watchers
 	- Channel Divinity
 		- Watcher's Will: Done
 		- Adbjure the Extraplanar: waiting on feature
 	- Vigilant Rebuke: Done
 	- Mortal Bulwark: waiting for feature
+
 - Oathbreaker
 	- Channel divinity
 		- Control undead: waiting for feauture
