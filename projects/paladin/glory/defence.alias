@@ -1,0 +1,78 @@
+!alias defence embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+i = '-i' in &ARGS& 
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Glory"}')).get('PaladinLevel','').lower()
+cc = "Glorious Defense"
+args = argparse(&ARGS&)
+t = args.last('t')
+ac = args.last('ac')
+bonus = max(charismaMod,1)
+
+# Pronouns
+their = get('their','their')
+
+# Requirements
+v = (lvl > 14 and sub == 'glory') or i
+
+# Setting up the return.
+base = f''' -thumb {image} -color {color} '''
+
+# If there is no combat you can use the ability, just not target someone. Might change it the future.
+if v and not com and ac:
+  # Add the desciption.
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can turn defense into a sudden strike. When you or another creature you can see within 10 feet of you is hit by an attack roll, you can use your reaction to grant a bonus to the target's AC against that attack, potentially causing it to miss. The bonus equals your Charisma modifier (minimum of +1). If the attack misses, you can make one weapon attack against the attacker as part of this reaction, provided the attacker is within your weapon's range." '''
+  # Get the new AC, this is not possible if no AC was giving so the -ac arguments is required for this.
+  som = str(ac) + '+' + str(bonus)
+  # Adding the title and new ac to the return.
+  base += f''' -title "{name} uses {cc} to protect someone." -f "New Ac|{vroll(som)}" '''
+  # Checking to mod the cc, And returning.
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+
+# If there is combat we don't need to ac, though you can still pas it because... idk.
+if v and com:
+  # Checking if there is a target.
+  if not t:
+    return base + f''' -title "{name} Does't protect anyone!" -desc "Use -t to target someone in combat." '''
+  # Adding the description.
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can turn defense into a sudden strike. When you or another creature you can see within 10 feet of you is hit by an attack roll, you can use your reaction to grant a bonus to the target's AC against that attack, potentially causing it to miss. The bonus equals your Charisma modifier (minimum of +1). If the attack misses, you can make one weapon attack against the attacker as part of this reaction, provided the attacker is within your weapon's range." '''
+  # Making the target a simplecombatant
+  t = c.get_combatant(t)
+  # This check really is redundant since it should always give the targets ac but let's keep it in for now.
+  if not ac:
+    ac = t.ac
+  # Finding the new ac and making it a string so I can do math with vroll( A trick I stroll from Dr. Turtle, thanks for that)
+  som = str(ac) + '+' + str(bonus)
+  # Adding the new ac, it doesn't add an effect since the effect only lasts for the one attack.
+  base += f''' -f "{t.name}|New ac: {vroll(som)}" '''
+  # Modding the cc as needed and then returning.
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  else:
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+  
+# If you get here then I check if you maybe tried to rightfuly use the ability outside of combat but without the -ac arg, then telling why it didn't work.
+if v and not ac:
+  return base + f''' -title "{name} does't know how protected their target is!" -desc "use -ac to pass the current ac of your target." '''
+
+# Telling why the alias doesn't work then returning.
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'glory':
+  base += f''' -title "{name} did not swear the oath Glory." '''
+else:
+   base += f''' -title "{name} is not yet a level 15 paladin." '''
+return base
+</drac2>
