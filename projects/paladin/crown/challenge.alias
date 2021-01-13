@@ -1,0 +1,71 @@
+embed <drac2>
+ch = character()
+c = combat()
+com = c and c.me
+args = argparse(&ARGS&)
+i = '-i' in &ARGS&
+dc = ch.spellbook.dc
+adv = [None, True, False][args.adv()]
+targs = args.get('t')
+cc = "Channel Divinity"
+sub = load_json(get('subclass','{"PaladinLevel":"Crown"}')).get("PaladinLevel","").lower()
+lvl = int(get("PaladinLevel",0))
+how = ["not",True,False][args.adv(custom={"adv":"pass","dis":"fail"})]
+their = get('their','their')
+v = (lvl > 2 and sub == 'crown') or i
+base = f''' -thumb {image} -color {color}'''
+if v and targs and com:
+  if ch.cc_exists(cc) and not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
+  base += f''' -f "Meta|**DC**: {dc}"'''
+  for t in targs:
+    t = t.split('|')
+    targ = t[0]
+    targargs = argparse(t)
+    if not adv:
+      adv1 = [None,True,False][targargs.adv()]
+    if how == "not":
+      how1 = ["not",True,False][targargs.adv(custom={"adv":"pass","dis":"fail"})]
+    targ = c.get_combatant(targ)
+    if not how1:
+      how1 = how
+    if not adv1:
+      adv1 = adv
+    if how1 == "not":
+      save = targ.save('wis',adv1)
+      saved = save.total >= dc
+    elif how1:
+      save = "Automatic succes"
+      saved = True
+    else:
+      save = "Automatic Failure!"
+      saved = False
+    if not saved:
+      targ.add_effect("Champion's Challenge",'',desc=f"Can't willingly move away from {name}.\n- The effect ends if {targ.name} is further then 30 feet from {name}, if {name} is incapaciteted.")
+      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Failure!' if how1 else ''}\n**Effect**: Champion's Challenge \n - The target can not willingly move more then 30 feet away from {name}." '''
+    else:
+      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Success!' if not how1 else ''}" '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc " As a bonus action, you issue a challenge that compels other creatures to do battle with you. Each creature of your choice that you can see within 30 feet of you must make a Wisdom saving throw. On a failed save, a creature can't willingly move more than 30 feet away from you. This effect ends on the creature if you are incapacitated or die or if the creature is more than 30 feet away from you." '''
+  adv, how = adv1, how1
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
+  return base
+if v and not com:
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
+  return base + f''' -title "{name} uses {their} {cc}" -desc " As a bonus action, you issue a challenge that compels other creatures to do battle with you. Each creature of your choice that you can see within 30 feet of you must make a Wisdom saving throw. On a failed save, a creature can't willingly move more than 30 feet away from you. This effect ends on the creature if you are incapacitated or die or if the creature is more than 30 feet away from you."'''
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'glory':
+  base += f''' -title "{name} did not swear the oath Glory." '''
+else:
+   base += f''' -title "{name} is not yet a level 15 paladin." '''
+return base
+</drac2>
