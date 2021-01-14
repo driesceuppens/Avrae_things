@@ -11,7 +11,7 @@
 </ul>
 <br>
 <ul>
-	<li>Oath of the Ancients</li>
+	<li>Oath of the Ancients: done</li>
 	<ul>
 		<li>Chanel Divinty</li>
 		<ul>
