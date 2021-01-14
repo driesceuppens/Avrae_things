@@ -6,78 +6,76 @@ c = combat()
 com = c and c.me
 args = argparse(&ARGS&)
 i = '-i' in &ARGS&
-dc = ch.spellbook.dc
-adv = [None, True, False][args.adv()]
+dc = args.last('dc')
+if not dc:
+  dc = ch.spellbook.dc
+adv = ["not", True, False][args.adv()]
 targs = args.get('t')
 cc = "Channel Divinity"
 sub = load_json(get('subclass','{"PaladinLevel":"Crown"}')).get("PaladinLevel","").lower()
 lvl = int(get("PaladinLevel",0))
-how = ["not",True,False][args.adv(custom={"adv":"pass","dis":"fail"})]
-
-# Pronouns
+# I hate it too but it works.
+how = ["not","yes","no"][args.adv(custom={"adv":"pass","dis":"fail"})]
+# setting up the pronouns, variables and return args.
 their = get('their','their')
-
-# Requirments
 v = (lvl > 2 and sub == 'crown') or i
-
-# Setting up the return
 base = f''' -thumb {image} -color {color}'''
 
-# Checking the requiremtns, For the alias to work in combat we need targets I check them both at the same time.
+# Checking the requirements, If you want to target you need combat so it's all check at once.
 if v and targs and com:
-  # Checking if the counter still has uses.
+  # Checking for uses on the counter.
   if ch.cc_exists(cc) and not i:
     if not ch.get_cc(cc):
       return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
-   # Adding the DC.
+  # adding the DC to the return args
   base += f''' -f "Meta|**DC**: {dc}"'''
-  # Looping over all the targets to have them make a save.
+  # Looping over the targets.
   for t in targs:
-    # finding the target specific arguments
+    # Making a list to get the arguments to parse for each target.
     t = t.split('|')
     # Getting the name of the target
     targ = t[0]
-    # Parsing the arguments of the target
+    # Parsing the arguments to each target
     targargs = argparse(t)
-    # Checking if there is adv giving for all targets.
-    if not adv:
+    # Checking of groud adv was given
+    if adv == "not":
       adv1 = [None,True,False][targargs.adv()]
-     # Checking if pass/fail was given for all targets.
-    if how == "not":
-      how1 = ["not",True,False][targargs.adv(custom={"adv":"pass","dis":"fail"})]
-    # Making the target a SimpleCombatant
-    targ = c.get_combatant(targ)
-    # Making sure adv1 and how1 are definded, this is done to prevent changing the adc and how for all the next combatants.
-    if not how1:
-      how1 = how
-    if not adv1:
+    # Making sure adv1 is definded.
+    else:
       adv1 = adv
-    # Checking if the targets auto fails/succeeds.
+    # Checking if groupd pass/fail was given.
+    if how == "not":
+      how1 = ["not", "yes", "no"][targargs.adv(custom={"adv":"pass","dis":"fail"})]
+    # Making sure how1 is defined.
+    else:
+      how1 = how
+    targ = c.get_combatant(targ)
+    # Checking if the target needs to auto pass/fail or if a save needs to be rolled.
     if how1 == "not":
       save = targ.save('wis',adv1)
       saved = save.total >= dc
-    elif how1:
+    elif how1 == "yes":
       save = "Automatic succes"
       saved = True
-    else:
+    elif how1 == "no":
       save = "Automatic Failure!"
       saved = False
-    # If the target failed adding the effect and field.
+    # Adding the effect if failed, telling if the fail was auto or not and adding the roll to the return.
     if not saved:
       targ.add_effect("Champion's Challenge",'',desc=f"Can't willingly move away from {name}.\n- The effect ends if {targ.name} is further then 30 feet from {name}, if {name} is incapaciteted.")
-      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Failure!' if how1 else ''}\n**Effect**: Champion's Challenge \n - The target can not willingly move more then 30 feet away from {name}." '''
-    # Or not.
+      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Failure!' if how1 == "not" else ''}\n**Effect**: Champion's Challenge \n - The target can not willingly move more then 30 feet away from {name}." '''
+    # Adding if the fail was autosucces and other stuff.
     else:
-      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Success!' if not how1 else ''}" '''
+      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Success!' if not how1 == "not" else ''}" '''
   base += f''' -title "{name} uses {their} {cc}!" -desc " As a bonus action, you issue a challenge that compels other creatures to do battle with you. Each creature of your choice that you can see within 30 feet of you must make a Wisdom saving throw. On a failed save, a creature can't willingly move more than 30 feet away from you. This effect ends on the creature if you are incapacitated or die or if the creature is more than 30 feet away from you." '''
-  # Using the counters as needed and adding the cc_str. returning once done.
+  # Modding the cc if needed then returning.
   if not i:
     ch.mod_cc(cc,-1)
     return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
   if ch.cc_exists(cc):
     base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
   return base
-# If there are no targets we just need to check for changing the mod and then returning as needed.
+# If there is no combat or there are no targets given, also adds the DC now.
 if v:
   # Checking if the counter still has uses.
   if ch.cc_exists(cc) and not i:
@@ -85,12 +83,12 @@ if v:
       return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
   if not i:
     ch.mod_cc(cc,-1)
-    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
-  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  elif ch.cc_exists(cc):
     base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
-  return base + f''' -title "{name} uses {their} {cc}" -desc " As a bonus action, you issue a challenge that compels other creatures to do battle with you. Each creature of your choice that you can see within 30 feet of you must make a Wisdom saving throw. On a failed save, a creature can't willingly move more than 30 feet away from you. This effect ends on the creature if you are incapacitated or die or if the creature is more than 30 feet away from you."'''
+  return base + f''' -title "{name} uses {their} {cc}" -f "Meta|**DC**: {dc}" -desc " As a bonus action, you issue a challenge that compels other creatures to do battle with you. Each creature of your choice that you can see within 30 feet of you must make a Wisdom saving throw. On a failed save, a creature can't willingly move more than 30 feet away from you. This effect ends on the creature if you are incapacitated or die or if the creature is more than 30 feet away from you."'''
 
-# The other options if you can't use the ability.
+# If the ability can't be used telling why it didn't work.
 if lvl == 0:
   base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
 elif not sub == 'glory':
@@ -98,6 +96,6 @@ elif not sub == 'glory':
 else:
    base += f''' -title "{name} is not yet a level 15 paladin." '''
 
-# Returning as needed.
+# Making sure the args are returned.
 return base
 </drac2>
