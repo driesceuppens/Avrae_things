@@ -1,0 +1,68 @@
+embed <drac2>
+
+# variables
+ch = character()
+c = combat()
+com = c and c.me
+args = argparse(&ARGS&)
+i = '-i' in &ARGS&
+bonus = max(int(charismaMod),1)
+adv = [None, True, False][args.adv()]
+targs = args.get('t')
+sub = load_json(get('subclass','{"PaladinLevel":"Crown"}')).get("PaladinLevel","").lower()
+lvl = int(get("PaladinLevel",0))
+cc = "Channel Divinity"
+their = get('their','their')
+
+# Requirments, return args.
+v = (lvl > 2 and sub == 'crown') or i
+base = f''' -thumb {image} -color {color}'''
+
+# Checking for combat and the requirments.
+if v and com:
+  # Checking if there are uses of the cc left.
+  if not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+  # Adding the desc.
+  base += f''' -title "{name} uses {their} {cc}!" -desc "As a bonus action, you can bolster injured creatures with your Channel Divinity. Each creature of your choice that can hear you within 30 feet of you regains hit points equal to 1d6 + your Charisma modifier (minimum of 1) if it has no more than half of its hit points." '''
+  # adding the return for the footer since I wanted an easy solution.
+  foot = ''
+  for t in targs:
+    # Making them an combatant, then rolling the heal and healing them.
+    t = c.get_combatant(t)
+    # If they are not below half hp they are not healed.
+    if t.hp >= t.max_hp:
+      heal = vroll('1d6+'+str(bonus))
+      t.modify_hp(heal.total)
+      # Adding the roll to the return
+      base += f''' -f "{t.name}|{heal}" '''
+      foot += f'''{t.name}: {t.hp_str()}\n'''
+    else:
+      pass
+  # adding the footer
+  base += f''' -footer "{foot}" '''
+# modding the cc if needed and returning the things, this makes it work even if there is no combat.
+if v:
+  if not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} left!" '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  else:
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base + f''' -title "{name} uses {their} {cc}!" -desc "As a bonus action, you can bolster injured creatures with your Channel Divinity. Each creature of your choice that can hear you within 30 feet of you regains hit points equal to 1d6 + your Charisma modifier (minimum of 1) if it has no more than half of its hit points." '''
+
+# If the ability can't be uses telling why
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'glory':
+  base += f''' -title "{name} did not swear the oath the Crown." '''
+else:
+   base += f''' -title "{name} is not yet a level 3 paladin." '''
+
+# Returning the args.
+return base
+</drac2>
