@@ -1,0 +1,45 @@
+embed <drac2>
+
+# variables
+ch = character()
+c = combat()
+com = c and c.me
+args = argparse(&ARGS&)
+i = '-i' in &ARGS&
+dam = &ARGS&[0]
+targ = args.last('t')
+sub = load_json(get('subclass','{"PaladinLevel":"Crown"}')).get("PaladinLevel","").lower()
+lvl = int(get("PaladinLevel",0))
+their = get('their','their')
+
+# return and requirements.
+v = (lvl > 6 and sub == 'crown') or i
+base = f''' -thumb {image} -color {color}'''
+
+# Checking if the ability can be used.
+if v:
+  # Because sometimes I get to be lazy
+  foot = ''
+  # Can only be done if there are targets and combat.
+  if com and targ:
+    targ = c.get_combatant(targ)
+    targ.modify_hp(int(dam))
+    ch.modify_hp(-int(dam))
+    foot += f'''{targ.name}: {targ.hp_str()}\n'''
+  # Adding the transferred damage to you can easily see what needs to be adjusted.
+  base += f''' -f "Damage transfered|{dam}" '''
+  ch.modify_hp(-int(dam))
+  foot += f'''{name}: {ch.hp_str()}'''
+  return base + f''' -title "{name} uses {their} Divine allegiance to protect {targ.name if targ else 'someone'}!" -desc "Starting at 7th level, when a creature within 5 feet of you takes damage, you can use your reaction to magically substitute your own health for that of the target creature, causing that creature not to take the damage. Instead, you take the damage. This damage to you can't be reduced or prevented in any way." -footer "{foot}" '''
+
+# If the ability can't be used.
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'crown':
+  base += f''' -title "{name} did not swear the oath the Crown." '''
+else:
+   base += f''' -title "{name} is not yet a level 7 paladin." '''
+
+# Returning
+return base
+</drac2>
