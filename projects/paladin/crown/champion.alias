@@ -1,0 +1,36 @@
+embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Crown"}')).get('PaladinLevel','').lower()
+cc = "Exalted Champion"
+i = '-i' in &ARGS&
+their = get('their','their')
+
+# requiremtns + return
+v = (lvl == 20 and sub == 'crown') or i
+base = f''' -thumb {image} -color {color} '''
+
+# Do I really need to explain this again? Look at the Living legend one it's the exact same alias...
+if v:
+  if com:
+    c.me.add_effect("Exhalted Champion",'-resist "nonmagical bludgeoning" -resist "nonmagical piercing" -resist "nonmagical slashing"',duration=10,desc="Resistance to nonmagical bludgeoning, piercing and slashing damage.\nYour allies have advantage on their death saving throws while within 30 feet of you.\nYou and your allies in 30 feet have advantage against wisdom saving throws.")
+  base += f''' -f "{name}|- Resistance to nonmagical bludgeoning, piercing and slashing damage.\n- Your allies have advantage on their death saving throws while within 30 feet of you.\n- You and your allies in 30 feet have advantage against wisdom saving throws." '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "At 20th level, your presence on the field of battle is an inspiration to those dedicated to your cause. You can use your action to gain the following benefits for 1 hour:\n\n- You have resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons.\n- Your allies have advantage on death saving throws while within 30 feet of you.\n- You have advantage on Wisdom saving throws, as do your allies within 30 feet of you." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  elif ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif sub != 'crown':
+  base += f''' -title "{name} did not swear the oath the Crown." '''
+else:
+   base += f''' -title "{name} is not yet a level 20 paladin." '''
+return base
+</drac2>
