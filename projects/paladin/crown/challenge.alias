@@ -85,7 +85,7 @@ if v:
       return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
   if not i:
     ch.mod_cc(cc,-1)
-    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
   if ch.cc_exists(cc):
     base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
   return base + f''' -title "{name} uses {their} {cc}" -desc " As a bonus action, you issue a challenge that compels other creatures to do battle with you. Each creature of your choice that you can see within 30 feet of you must make a Wisdom saving throw. On a failed save, a creature can't willingly move more than 30 feet away from you. This effect ends on the creature if you are incapacitated or die or if the creature is more than 30 feet away from you."'''
