@@ -43,6 +43,16 @@
 	<li>Exalted Champion: Not begun</li>
 	</ul>
 	<br>
+	<li>Oath of Devotion: Working on</li>
+	<ul>
+		<li>Channel Divinity</li>
+		<ul>
+			<li>Scaret Weapon</li>
+			<li>Turn the unholy: waiting for feature</li>
+		</ul>
+		<li>Holy Nimbus</li>
+	</ul>
+	<br>
 	<li>Oath of Glory: Done</li>
 	<ul>
 		<li>Channel Divinity</li>
@@ -54,7 +64,7 @@
 		<li>Living Legend</li>
 	</ul>
 	<br>
-	<li>Oath of Redemption: Working on</li>
+	<li>Oath of Redemption</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
@@ -101,7 +111,7 @@
 <h2>Upcoming</h2>
 <p>&nbsp;</p>
 <ul>
-	<li>Oath of the Redemption.</li>
+	<li>Oath of Devotion</li>
 </ul>
 <p>&nbsp;</p>
 <p>Unless I get requests from someone to focus on a subclass first I will work down the list. The exceptions will be, things that can't yet be fully automated, things that take a lot of effort. Those might be skipped.</p>
@@ -117,6 +127,7 @@
 	<ul>
 		<li>Turn the Faithless</li>
 		<li>Adjure the Extraplanar</li>
+		<li>turn the unholy</li>
 	</ul>
 </ul>
 <p>&nbsp;</p>
