@@ -1,0 +1,55 @@
+embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Vengance"}')).get('PaladinLevel','').lower()
+cc = "Channel Divinity"
+i = '-i' in &ARGS&
+args = argparse(&ARGS&)
+dc = args.last('dc')
+if not dc:
+  dc = ch.spellbook.dc
+adv = [None,True,False][args.adv()]
+how = ["not",True,False][args.adv(custom={'adv':'pass','dis':'fail'})]
+targ = args.last('t')
+their = get('their','their')
+
+# Requirments + return
+v = (lvl > 2 and sub == 'vengance') or i
+base = f''' -thumb {image} -color {color} '''
+if not i:
+  if not ch.get_cc(cc):
+    return base + f''' -title "{name} has no uses of {cc} left!" '''
+if v:
+  base += f''' -f "Meta|**DC**: {dc}" '''
+  if com and targ:
+    targ = c.get_combatant(targ)
+    if how != "not":
+      saved = how
+      save = False
+    else:
+      save = targ.save("wis",adv)
+      saved = save.total >= dc
+    if saved:
+      targ.add_effect("Abjure Enemy",'',10,desc="The creature's speed is halved for 1 minute or until the creature takes any damage")
+      base += f''' -f "{targ.name}|**WIS save**: {save if save else "Automatic"}  Succes!\n- The creature's speed is halved for 1 minute or until the creature takes any damage" '''
+    else:
+      targ.add_effect("Frigtened",'',10,desc="the creature is frightened for 1 minute or until it takes any damage.\n- The creature's speed is 0.\n- It can't benefit from any bonus to its speed.")
+      base += f''' -f "{targ.name}|**WIS save**: {save if save else "Automatic"} Failure!\n- the creature is frightened for 1 minute or until it takes any damage. While frightened, the creature's speed is 0, and it can't benefit from any bonus to its speed." '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "As an action, you present your holy symbol and speak a prayer of denunciation, using your Channel Divinity. Choose one creature within 60 feet of you that you can see. That creature must make a Wisdom saving throw, unless it is immune to being frightened. Fiends and undead have disadvantage on this saving throw.\n\nOn a failed save, the creature is frightened for 1 minute or until it takes any damage. While frightened, the creature's speed is 0, and it can't benefit from any bonus to its speed.\n\nOn a successful save, the creature's speed is halved for 1 minute or until the creature takes any damage." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  return b + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to summon the holy powers of the paladin?" '''
+if sub != "vengance":
+  return b + f''' -title "{name} did not sweat the oath of Vengance!" '''
+else:
+  return b + f''' -title "{name} is not yet a level 3 paladin!" '''
+</drac2>
