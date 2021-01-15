@@ -54,7 +54,7 @@
 		<li>Living Legend</li>
 	</ul>
 	<br>
-	<li>Oath of Redemption: Not begun</li>
+	<li>Oath of Redemption: Working on</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
@@ -101,7 +101,7 @@
 <h2>Upcoming</h2>
 <p>&nbsp;</p>
 <ul>
-	<li>Oath of the Conquest.</li>
+	<li>Oath of the Redemption.</li>
 </ul>
 <p>&nbsp;</p>
 <p>Unless I get requests from someone to focus on a subclass first I will work down the list. The exceptions will be, things that can't yet be fully automated, things that take a lot of effort. Those might be skipped.</p>
