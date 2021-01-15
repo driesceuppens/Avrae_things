@@ -1,0 +1,34 @@
+embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Conquest"}')).get('PaladinLevel','').lower()
+cc = "Invincible Conqueror"
+i = '-i' in &ARGS&
+their = get('their','their')
+
+# This is stolen from the crown champion alias, look there for explanations.
+v = (lvl == 20 and sub == 'conquest') or i
+base = f''' -thumb {image} -color {color} '''
+if v:
+  if com:
+    c.me.add_effect("Invincible Conqueror",'-resist  acid -resist "magical bludgeoning" -resist cold -resist fire -resist force -resist lightning -resist necrotic -resist "magical piercing" -resist poison -resist psychis -resist "magical slashing" -resist thunder =resist radiant',10,desc="You have resistance to all damage.\n- When you take the Attack action on your turn, you can make one additional attack as part of that action.\n- Your melee weapon attacks score a critical hit on a roll of 19 or 20 on the d20.")
+    base += f''' -f "{name}|**Effect**: Invincible Conqueror [10 rounds] (Resistance: acid, magical bludgeoning, cold, fire, force, lightning, necrotic, magical piercing, poison, psychis, magical slashing, thunder)\n- You have resistance to all damage.\n- When you take the Attack action on your turn, you can make one additional attack as part of that action.\n- Your melee weapon attacks score a critical hit on a roll of 19 or 20 on the d20." '''
+  base +=  f''' -title "{name} uses {their} {cc}!" -desc "At 20th level, you gain the ability to harness extraordinary martial prowess. As an action, you can magically become an avatar of conquest, gaining the following benefits for 1 minute:\n\n- You have resistance to all damage.\n- When you take the Attack action on your turn, you can make one additional attack as part of that action.\n- Your melee weapon attacks score a critical hit on a roll of 19 or 20 on the d20." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  elif ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif sub != 'conquest':
+  base += f''' -title "{name} did not swear the oath the Crown." '''
+else:
+   base += f''' -title "{name} is not yet a level 20 paladin." '''
+return base
+</drac2>
