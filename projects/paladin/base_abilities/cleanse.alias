@@ -1,0 +1,27 @@
+!alias cleanse embed <drac2>
+
+# Do I really need to write How this works it's modding one cc...
+ch = character()
+lvl = int(get("PaladinLevel",0))
+cc = "Cleansing Touch"
+i = '-i' in &ARGS&
+their = get('their','their')
+v = lvl > 13 or i
+base = f''' -thumb {image} -color {color} '''
+if not i:
+  if not ch.get_cc(cc):
+    return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+  ch.mod_cc(cc,-1)
+  base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+if v:
+  base += f''' -title "{name} uses {their} {cc}!" -desc "Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch." '''
+  if i:
+    if ch.cc_exists(cc):
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+else:
+   base += f''' -title "{name} is not yet a level 14 paladin." '''
+return base
+</drac2>
