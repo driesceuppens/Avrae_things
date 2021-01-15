@@ -1,0 +1,36 @@
+!alias guided embed <drac2>
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Conquest"}')).get('PaladinLevel','').lower()
+cc = "Channel Divinity"
+i = '-i' in &ARGS&
+args = argparse(&ARGS&)
+hit = args.last('hit')
+their = get('their','their')
+v = (lvl > 2 and sub == 'conquest') or i
+base = f''' -thumb {image} -color {color} '''
+if v:
+  if not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to strike with supernatural accuracy. When you make an attack roll, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the attack hits or misses." '''
+  if hit:
+    base += f''' -f "New to hit|{vroll(hit+'+10')}" '''
+  else:
+    base += f''' -f "Added to the to hit|**Bonus**: +10" '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif sub != 'conquest':
+  base += f''' -title "{name} did not swear the oath the Crown." '''
+else:
+   base += f''' -title "{name} is not yet a level 20 paladin." '''
+return base
+</drac2>
