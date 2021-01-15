@@ -1,0 +1,79 @@
+embed <drac2>
+
+# The same as the Champion's Challange alias. Look at that one.
+ch = character()
+c = combat()
+com = c and c.me
+args = argparse(&ARGS&)
+i = '-i' in &ARGS&
+dc = args.last('dc')
+if not dc:
+  dc = ch.spellbook.dc
+adv = ["not", True, False][args.adv()]
+targs = args.get('t')
+cc = "Channel Divinity"
+sub = load_json(get('subclass','{"PaladinLevel":"Conquest"}')).get("PaladinLevel","").lower()
+lvl = int(get("PaladinLevel",0))
+how = ["not","yes","no"][args.adv(custom={"adv":"pass","dis":"fail"})]
+their = get('their','their')
+v = (lvl > 2 and sub == 'conquest') or i
+base = f''' -thumb {image} -color {color}'''
+if v and targs and com:
+  if ch.cc_exists(cc) and not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
+  base += f''' -f "Meta|**DC**: {dc}"'''
+  for t in targs:
+    t = t.split('|')
+    targ = t[0]
+    targargs = argparse(t)
+    if adv == "not":
+      adv1 = [None,True,False][targargs.adv()]
+    else:
+      adv1 = adv
+    if how == "not":
+      how1 = ["not", "yes", "no"][targargs.adv(custom={"adv":"pass","dis":"fail"})]
+    else:
+      how1 = how
+    targ = c.get_combatant(targ)
+    if how1 == "not":
+      save = targ.save('wis',adv1)
+      saved = save.total >= dc
+    elif how1 == "yes":
+      save = "Automatic succes"
+      saved = True
+    elif how1 == "no":
+      save = "Automatic Failure!"
+      saved = False
+    if not saved:
+      targ.add_effect("Frightened",'',desc="A frightened creature has disadvantage on ability checks and attack rolls while thesource of its fear is within line of sight.\n- The creature can't willingly move closer to the source of its fear.")
+      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Failure!' if how1 == "not" else ''}\n**Effect**: Frightened \n - A frightened creature has disadvantage on ability checks and attack rolls while thesource of its fear is within line of sight.\n- The creature can't willingly move closer to the source of its fear." '''
+    else:
+      base += f''' -f "{targ.name}|**WIS save: ** {save} {'Success!' if how1 == "not" else ''}" '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to exude a terrifying presence. As an action, you force each creature of your choice that you can see within 30 feet of you to make a Wisdom saving throw. On a failed save, a creature becomes frightened of you for 1 minute. The frightened creature can repeat this saving throw at the end of each of its turns, ending the effect on itself on a success." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
+  return base
+if v:
+  # Checking if the counter still has uses.
+  if ch.cc_exists(cc) and not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  elif ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
+  return base + f''' -title "{name} uses {their} {cc}" -desc "You can use your Channel Divinity to exude a terrifying presence. As an action, you force each creature of your choice that you can see within 30 feet of you to make a Wisdom saving throw. On a failed save, a creature becomes frightened of you for 1 minute. The frightened creature can repeat this saving throw at the end of each of its turns, ending the effect on itself on a success."'''
+
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'conquest':
+  base += f''' -title "{name} did not swear the oath Conquest." '''
+else:
+   base += f''' -title "{name} is not yet a level 3 paladin." '''
+return base
+</drac2>
