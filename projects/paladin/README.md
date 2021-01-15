@@ -7,7 +7,8 @@
 <ul>
 	<li>Divine sense: done</li>
 	<li>Lay on hands: Will probably be done last if it's even needed since there is the `!loh` alias.</li>
-	<li>Divine smite: Same as lay on hands</li>
+	<li>Divine smite: Same as lay on hands, I might remake it to allow to oath of glory to use their inspiring smite in the alias.</li>
+	<li>Cleansing Tough: Done </li>
 </ul>
 <br>
 <ul>
@@ -21,12 +22,12 @@
 		<li>Undying Sentinel</li>
 		<li>Elder Champion</li>
 	</ul><br>
-	<li>Oath of Conquest: working on</li>
+	<li>Oath of Conquest: Done</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
-			<li>Conquering Presence: not begun</li>
-			<li>Guided strike: Not begun</li>
+			<li>Conquering Presence</li>
+			<li>Guided strike </li>
 		</ul>
 		<li>Invincible Conqueror</li>
 	</ul>
