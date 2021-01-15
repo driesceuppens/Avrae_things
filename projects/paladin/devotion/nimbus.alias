@@ -1,0 +1,28 @@
+embed <drac2>
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Devotion"}')).get('PaladinLevel','').lower()
+cc = "Holy Nimbus"
+i = '-i' in &ARGS&
+their = get('their','their')
+v = (lvl == 20 and sub == 'devotion') or i
+b = f''' -thumb {image} -color {color} '''
+if v:
+  if com:
+    c.me.add_effect("Holy Nimbus",'-attack "|10[radiant]|Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage"',10,desc="Bright sunlight shines from you in a 30 foot radius and dim light for another 30 feet beyond that.\n- Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.\n- you have advantage on saving throws against spells cast by fiends or undead.")
+  b += f''' -f "{name}|**Effect**: Holy Nimbus[10 rounds]\n- Bright sunlight shines from you in a 30 foot radius and dim light for another 30 feet beyond that.\n- Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.\n- you have advantage on saving throws against spells cast by fiends or undead." -title "{name} uses {their} {cc}!" -desc "At 20th level, as an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius, and dim light shines 30 feet beyond that.\n\nWhenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.\n\nIn addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return b +  f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    b += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return b
+if lvl == 0:
+  return b + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to summon the holy powers of the paladin?" '''
+if sub != "devotion":
+  return b + f''' -title "{name} did not sweat the oath of Devotion!" '''
+else:
+  return b + f''' -title "{name} is not yet a level 3 paladin!" '''
+</drac2>
