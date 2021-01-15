@@ -76,11 +76,11 @@
 		<li>Emissary of redemption</li>
 	</ul>
 	<br>
-	<li>Oath of Vengeance: Not begun</li>
+	<li>Oath of Vengeance: Working on</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
-			<li>Anjure Enemy</li>
+			<li>Anjure Enemy: Done</li>
 			<li>Vow of Enmity</li>
 		</ul>
 		<li>Avenging Angel</li>
@@ -111,7 +111,7 @@
 <h2>Upcoming</h2>
 <p>&nbsp;</p>
 <ul>
-	<li>Oath of Devotion</li>
+	<li>Oath of Vengeance</li>
 </ul>
 <p>&nbsp;</p>
 <p>Unless I get requests from someone to focus on a subclass first I will work down the list. The exceptions will be, things that can't yet be fully automated, things that take a lot of effort. Those might be skipped.</p>
