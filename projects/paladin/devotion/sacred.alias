@@ -1,0 +1,43 @@
+!alias sacred embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = c and c.me
+sub = load_json(get("subclass","{'PaladinLevel':'Devotion'}")).get("PaladinLevel","").lower()
+lvl = int(get("PaladinLevel",0))
+cc = "Channel Divinity"
+i = '-i' in &ARGS&
+their = get('their','their')
+
+# Requirements + base
+v = (lvl > 2 and sub == "devotion") or i
+base = f''' -thumb {image} -color {color} '''
+
+# Checking if there are uses left.
+if not i:
+  if ch.cc_exists(cc):
+    return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+    
+# Doing the things
+if v:
+  base += f''' -title "{name} uses {their} {cc}!" -desc "As an action, you can imbue one weapon that you are holding with positive energy, using your Channel Divinity. For 1 minute, you add your Charisma modifier to attack rolls made with that weapon (with a minimum bonus of +1). The weapon also emits bright light in a 20-foot radius and dim light 20 feet beyond that. If the weapon is not already magical, it becomes magical for the duration." '''
+  if com:
+    # Adding an effect the snippet can look for to add the damage
+    c.me.add_effect("Sacret weapon",'',10,desc="You can add your charismamodifier to attackroles for one minute.")
+  base += f''' -f "{name}|**Effect**: Sacret Weapon[10 rounds]\n- You can add your charismamodifier to your attack roles." '''
+  if not i:
+    if ch.cc_exists(cc):
+      ch.mod_cc(cc,-1)
+      return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+if sub != "devotion":
+  base += f''' -title "{name} did not swear the oath of Devotion." '''
+else:
+   base += f''' -title "{name} is not yet a level 3 paladin." '''
+return base
+</drac2>
