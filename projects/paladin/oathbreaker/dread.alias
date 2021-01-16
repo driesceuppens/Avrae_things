@@ -1,0 +1,34 @@
+embed <drac2>
+ch = character()
+c = combat()
+com = c and c.me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Oathbreaker"}')).get('PaladinLevel','').lower()
+cc = "Dread Lord"
+i = '-i' in &ARGS&
+bonus = charismaMod
+their = get('their','their')
+v = (lvl == 20 and sub == 'oathbreaker') or i
+base = f''' -thumb {image} -color {color} '''
+if v and not i:
+  if not ch.get_cc(cc):
+    return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+if v:
+  if com:
+    c.me.add_effect("Dread Lord",f''' -attack "{bonus}+{proficiencyBonus}|3d10+{bonus}[necrotic]|{name} can use a bonus action on his or her turn to cause the shadows in the aura to attack one creature. The paladin makes a melee spell attack against the target." ''',10,desc="The paladin makes a melee spell attack against the target. If the attack hits, the target takes necrotic damage equal to 3d10 + the paladin's Charisma modifier.")
+    c.me.add_effect("Frightened Things",f''' -attack "|4d10[psychic]|Whenever an enemy that is frightened by the paladin starts its turn in the aura, it takes 4d10 psychic damage." ''',10,desc="Whenever an enemy that is frightened by the paladin starts its turn in the aura, it takes 4d10 psychic damage.")
+  base += f''' -title "{name} uses {their} {cc}!" -desc "At 20th level, the paladin can, as an action, surround himself or herself with an aura of gloom that lasts for 1 minute. The aura reduces any bright light in a 30-foot radius around the paladin to dim light. Whenever an enemy that is frightened by the paladin starts its turn in the aura, it takes 4d10 psychic damage. Additionally, the paladin and creatures he or she chooses in the aura are draped in deeper shadow. Creatures that rely on sight have disadvantage on attack rolls against creatures draped in this shadow.\n\nWhile the aura lasts, the paladin can use a bonus action on his or her turn to cause the shadows in the aura to attack one creature. The paladin makes a melee spell attack against the target. If the attack hits, the target takes necrotic damage equal to 3d10 + the paladin's Charisma modifier." -f "{name}|**Effect**: Dread Lord [10 rounds] (Attack: 10+6|3d10+10[necrotic])\n - The paladin makes a melee spell attack against the target. If the attack hits, the target takes necrotic damage equal to 3d10 + the paladin's Charisma modifier.\nFrightened Things [10 rounds] (Attack: None|4d10[psychic]) 
+ - Whenever an enemy that is frightened by the paladin starts its turn in the aura, it takes 4d10 psychic damage."'''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  return base + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the holy power of the paladins?" '''
+if sub != "vengeance":
+  return base + f''' -title "{name} did not break their Oath!" '''
+else:
+  return base + f''' -title "{name} is not yet a level 20 Paladin!" '''
+</drac2>
