@@ -1,0 +1,52 @@
+embed <drac2>
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Oathbreaker"}')).get('PaladinLevel','').lower()
+cc = "Channel Divinity"
+i = '-i' in &ARGS&
+their = get('their','their')
+args = argparse(&ARGS&)
+targ = args.last('t')
+dc = args.last('dc')
+if not dc:
+  dc = ch.spellbook.dc
+adv = ["not", True, False][args.adv()]
+how = ["not", True, False][args.adv(custom={'adv':'pass','dis':'fail'})]
+v = (lvl > 2 and sub == 'oathbreaker') or i
+base = f''' -thumb {image} -color {color} '''
+if v and not i:
+  if not ch.get_cc(cc):
+    return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+if v:
+  base += f''' -title "{name} uses {their} {cc}!" -desc "As an action, the paladin targets one undead creature he or she can see within 30 feet of him or her. The target must make a Wisdom saving throw. On a failed save, the target must obey the paladin's commands for the next 24 hours, or until the paladin uses this Channel Divinity option again. An undead whose challenge rating is equal to or greater than the paladin's level is immune to this effect." -f "meta|**DC**: {dc}" '''
+  if com and targ:
+    targ = c.get_combatant(targ)
+    if targ.level >= lvl:
+      how = False
+      base += f''' -f "{targ.name} is too powerful for {name} to control!" '''
+    if how != "not":
+      saved = how
+      save = "Automatic"
+    else:
+      save = targ.save("wis",adv)
+      saved = save.total >= dc
+    if saved:
+      base += f''' -f "{targ.name}|**WIS save**: {save} success!" '''
+    else:
+      targ.add_effect("Control Undead",'',desc=f"{targ.name} must obey all commands from {name}.")
+      base += f''' -f "{targ.name}|**WIS save**: {save} failure!\n- {targ.name} must obey all commands from {name}." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  return base + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to use the deplorable power of the Oathbreakers?" '''
+if sub != "oathbreaker":
+  return base + f''' -title "{name} did not break their Oath!" '''
+else:
+  return base + f''' -title "{name} is not yet a level 3 Paladin!" '''
+</drac2>
