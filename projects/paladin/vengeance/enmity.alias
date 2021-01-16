@@ -1,0 +1,48 @@
+embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Vengance"}')).get('PaladinLevel','').lower()
+cc = "Channel Divinity"
+i = '-i' in &ARGS&
+args = argparse(&ARGS&)
+targ = args.last('t')
+their = get('their','their')
+
+# Requirments + return
+v = (lvl > 2 and sub == 'vengeance') or i
+base = f''' -thumb {image} -color {color} '''
+
+# Checking if there are uses left.
+if not i and v:
+  if not ch.get_cc(cc):
+    return base + f''' -f "{name} has no uses of {cc} left!" '''
+
+# Checking the requirments.
+if v:
+  # Adding the description and title. 
+  base += f''' -title "{name} uses {their} {cc}!" -desc "As a bonus action, you can utter a vow of enmity against a creature you can see within 10 feet of you, using your Channel Divinity. You gain advantage on attack rolls against the creature for 1 minute or until it drops to 0 hit points or falls unconscious." '''
+  # Adding the effect if there is combat and a target.
+  if com and targ:
+    targ = c.get_combatant(targ)
+    targ.add_effect("Vow of Enmity",'',10,desc=f"{name} has advantage on all attack rolls against {targ.name}.")
+    base += f''' -f "{targ.name}|**Effect**: Vow of Enmity[10 rounds]\n- {name} has advantage against {targ.name}\n- The effect ends in {targ.name} drops to 0 hp or falls unconsious." '''
+  # Checking to use a counter.
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+
+# If v isn't true adding why.
+if lvl == 0:
+  return base + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the holy power of the paladins?" '''
+if sub != "vengeance":
+  return base + f''' -title "{name} did not swear the Oath of Vengeance!" '''
+else:
+  return base + f''' -title "{name} is not yet a level 3 Paladin!" '''
+</drac2>
