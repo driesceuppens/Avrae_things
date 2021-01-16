@@ -1,0 +1,42 @@
+embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Vengance"}')).get('PaladinLevel','').lower()
+cc = "Avenging Angel"
+i = '-i' in &ARGS&
+their = get('their','their')
+
+# Requirments
+v = (lvl == 20 and sub == 'vengeance') or i
+base = f''' -thumb {image} -color {color} '''
+
+# Checking if there are counters left to use
+if v and not i:
+  if not ch.get_cc(cc):
+    return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+if v:
+	# Adding the title and desc.
+  base += f''' -title "{name} uses {their} {cc}!" -desc "At 20th level, you can assume the form of an angelic avenger. Using your action, you undergo a transformation. For 1 hour, you gain the following benefits:\n\n- Wings sprout from your back and grant you a flying speed of 60 feet.\n- You emanate an aura of menace in a 30-foot radius. The first time any enemy creature enters the aura or starts its turn there during a battle, the creature must succeed on a Wisdom saving throw or become frightened of you for 1 minute or until it takes any damage. Attack rolls against the frightened creature have advantage." '''
+  if com:
+		# Adding the effect.
+    c.me.add_effect("Avenging Angel",'',10,desc="A flying speed of 60 feet!\n- Creatures that enter a 30 foot radius around you for the first time of start their turn there must succeed on a Wisdom saving throw or Become frightened for one minute.")
+  # adding the stuff and things
+	base += f''' -f "{name}|**Effect**: Avenging Angel[10 rounds]\n- A flying speed of 60 feet.\n- Creatures that enter a 30 foot radius around you for the first time of start their turn there must succeed on a Wisdom saving throw or Become frightened for one minute." '''
+  # using a counter.
+	if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  return base + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the holy power of the paladins?" '''
+if sub != "vengeance":
+  return base + f''' -title "{name} did not swear the Oath of Vengeance!" '''
+else:
+  return base + f''' -title "{name} is not yet a level 3 Paladin!" '''
+</drac2>
