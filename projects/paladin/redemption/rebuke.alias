@@ -1,0 +1,56 @@
+embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "Redemption"}')).get('PaladinLevel','').lower()
+cc = "Channel Divinity"
+i = '-i' in &ARGS&
+args = argparse(&ARGS&)
+dc = args.last('dc')
+if not dc:
+  dc = ch.spellbook.dc
+adv = [None,True,False][args.adv()]
+how = ["not",True,False][args.adv(custom={'adv':'pass','dis':'fail'})]
+targ = args.last('t')
+dam = args.last('d')
+their = get('their','their')
+
+# Requirments + return
+v = (lvl > 2 and sub == 'redemption') or i
+base = f''' -thumb {image} -color {color} '''
+if not i and v:
+  if not ch.get_cc(cc):
+    return base + f''' -title "{name} has no uses of {cc} left!" '''
+if v:
+  base += f''' -f "Meta|**Damage**: {dam}[radiant]\n**DC**: {dc}" '''
+  if com and targ:
+    targ = c.get_combatant(targ)
+    if how != "not":
+      saved = how
+      save = "Automatic"
+    else:
+      save = targ.save("wis",adv)
+      saved = save.total >= dc
+    if saved:
+      dam = targ.damage(str(int(dam)//2)+'[radiant]')
+      base += f''' -f "{targ.name}|**WIS save**: {save}  Succes!\n**Damage**: {2*int(dam.total)} / 2 [radiant] = {dam.total}" -footer "{targ.name}: {targ.hp_str()}" '''
+    else:
+      dam = targ.damage(dam+'[radiant]')
+      base += f''' -f "{targ.name}|**WIS save**: {save} Failure!\n**Damage**: {dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to rebuke those who use violence. Immediately after an attacker within 30 feet of you deals damage with an attack against a creature other than you, you can use your reaction to force the attacker to make a Wisdom saving throw. On a failed save, the attacker takes radiant damage equal to the damage it just dealt. On a successful save, it takes half as much damage." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  return base
+if lvl == 0:
+  return b + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to summon the holy powers of the paladin?" '''
+if sub != "vengance":
+  return b + f''' -title "{name} did not sweat the oath of Redemption!" '''
+else:
+  return b + f''' -title "{name} is not yet a level 3 paladin!" '''
+</drac2>
