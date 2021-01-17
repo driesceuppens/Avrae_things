@@ -1,0 +1,73 @@
+embed <drac2>
+ch = character()
+c = combat()
+com = c and c.me
+args = argparse(&ARGS&)
+i = '-i' in &ARGS&
+dc = args.last('dc')
+if not dc:
+  dc = ch.spellbook.dc
+adv = ["not", True, False][args.adv()]
+targs = args.get('t')
+cc = "Channel Divinity"
+sub = load_json(get('subclass','{"PaladinLevel":"The watchers"}')).get("PaladinLevel","").lower()
+lvl = int(get("PaladinLevel",0))
+# I hate it too but it works.
+how = ["not",True,False][args.adv(custom={"adv":"pass","dis":"fail"})]
+their = get('their','their')
+v = (lvl > 2 and sub == 'the watchers') or i
+base = f''' -thumb {image} -color {color}'''
+if v and targs and com:
+  if ch.cc_exists(cc) and not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
+  base += f''' -f "Meta|**DC**: {dc}"'''
+  for t in targs:
+    t = t.split('|')
+    targ = t[0]
+    targargs = argparse(t)
+    if adv == "not":
+      adv1 = [None,True,False][targargs.adv()]
+    else:
+      adv1 = adv
+    if how == "not":
+      how1 = ["not", True, False][targargs.adv(custom={"adv":"pass","dis":"fail"})]
+    else:
+      how1 = how
+    targ = c.get_combatant(targ)
+    if how1 != "not":
+      save = "Automatic"
+      saved = how1
+    else:
+      save = targ.save("wis",adv1)
+      saved = save.total >= dc
+    if not saved:
+      targ.add_effect("Turned",'',10,desc=f"The target is frightened of {name}.\n- A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action.")
+      base += f''' -f "{targ.name}|**WIS save: ** {save} Failure!\n**Effect**: Frightened \n- A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action." '''
+    else:
+      base += f''' -f "{targ.name}|**WIS save: ** {save} Success!" '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to castigate unworldly beings. As an action, you present your holy symbol and each aberration, celestial, elemental, fey, or fiend within 30 feet of you that can hear you must make a Wisdom saving throw. On a failed save, the creature is turned for 1 minute or until it takes damage. A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action." '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  if ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
+  return base
+if v:
+  if ch.cc_exists(cc) and not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
+  if not i:
+    ch.mod_cc(cc,-1)
+    base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)"'''
+  elif ch.cc_exists(cc):
+    base += f''' -f "{cc}|{ch.cc_str(cc)}"'''
+  return base + f''' -title "{name} uses {their} {cc}" -f "Meta|**DC**: {dc}" -desc "You can use your Channel Divinity to castigate unworldly beings. As an action, you present your holy symbol and each aberration, celestial, elemental, fey, or fiend within 30 feet of you that can hear you must make a Wisdom saving throw. On a failed save, the creature is turned for 1 minute or until it takes damage. A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action." '''
+if lvl == 0:
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'the watchers':
+  base += f''' -title "{name} did not break their oath." '''
+else:
+   base += f''' -title "{name} is not yet a level 3 paladin." '''
+return base
+</drac2>
