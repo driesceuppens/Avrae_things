@@ -71,7 +71,7 @@
 			<li>Emissary of Peace</li>
 			<li>Rebuke the violent</li>
 		</ul>
-		<li>Aura of the guardian</li>
+		<li>Aura of the guardian: Done</li>
 		<li>Emissary of redemption</li>
 	</ul>
 	<br>
@@ -118,6 +118,7 @@
 <h2>Still needs to be done</h2>
 <ul>
 	<li>Ancients: Turn the faithless</li>
+	<li>Devotion: Turn the unholy</li>
 	<li>Watchers: Adjure the Extraplanar</li>
 	<li>Mortal bulwark</li>
 </ul>
