@@ -1,0 +1,42 @@
+embed <drac2>
+
+# Variables
+ch = character()
+c = combat()
+com = combat() and combat().me
+lvl = int(get("PaladinLevel",0))
+sub = load_json(get('subclass','{"PaladinLevel": "The Watchers"}')).get('PaladinLevel','').lower()
+cc = "Mortal Bulwark"
+i = '-i' in &ARGS&
+their = get('their','their')
+
+# Requirments
+v = (lvl == 20 and sub == 'the watchers') or i
+base = f''' -thumb {image} -color {color} '''
+
+# Checking if there are counters left to use
+if v and not i:
+	if not ch.get_cc(cc):
+		return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
+if v:
+	# Adding the title and desc.
+	base += f''' -title "{name} uses {their} {cc}!" -desc "You manifest a spark of divine power in defense of the mortal realms. As a bonus action, you gain the following benefits for 1 minute:\n\n- You gain truesight with a range of 120 feet.\n- You have advantage on attack rolls against aberrations, celestials, elementals, fey, and fiends.\n- When you hit a creature with an attack roll and deal damage to it, you can also force it to make a Charisma saving throw against your spell save DC. On a failed save, the creature is magically banished to its native plane of existence if it's currently not there. On a successful save, the creature can't be banished by this feature for 24 hours." '''
+	if com:
+		# Adding the effect.
+		c.me.add_effect("Mortal Bulwark",'',10,desc="You gain truesight with a range of 120 feet.\n- You have advantage on attack rolls against aberrations, celestials, elementals, fey, and fiends.\n- When you hit a creature with an attack roll and deal damage to it, you can also force it to make a Charisma saving throw against your spell save DC. On a failed save, the creature is magically banished to its native plane of existence if it's currently not there. On a successful save, the creature can't be banished by this feature for 24 hours.")
+	# adding the stuff and things
+	base += f''' -f "{name}|**Effect**: Avenging Angel[10 rounds]\n- You gain truesight with a range of 120 feet.\n- You have advantage on attack rolls against aberrations, celestials, elementals, fey, and fiends.\n- When you hit a creature with an attack roll and deal damage to it, you can also force it to make a Charisma saving throw against your spell save DC. On a failed save, the creature is magically banished to its native plane of existence if it's currently not there. On a successful save, the creature can't be banished by this feature for 24 hours." '''
+	# using a counter.
+	if not i:
+		ch.mod_cc(cc,-1)
+		return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
+	if ch.cc_exists(cc):
+		base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+	return base
+if lvl == 0:
+	return base + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the holy power of the paladins?" '''
+if sub != "Mortal Bulwark":
+	return base + f''' -title "{name} did not swear the Oath of the Watchers!" '''
+else:
+	return base + f''' -title "{name} is not yet a level 20 Paladin!" '''
+</drac2>
