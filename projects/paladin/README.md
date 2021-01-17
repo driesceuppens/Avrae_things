@@ -39,11 +39,11 @@
 			<li>Champion's Challenge</li>
 			<li>Turn the tide</li>
 		</ul>
-	<li>Divine Allegiance: Not begun</li>
-	<li>Exalted Champion: Not begun</li>
+	<li>Divine Allegiance</li>
+	<li>Exalted Champion</li>
 	</ul>
 	<br>
-	<li>Oath of Devotion: Working on</li>
+	<li>Oath of Devotion: Done</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
@@ -64,7 +64,7 @@
 		<li>Living Legend</li>
 	</ul>
 	<br>
-	<li>Oath of Redemption</li>
+	<li>Oath of Redemption: Working on</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
@@ -72,15 +72,14 @@
 			<li>Rebuke the violent</li>
 		</ul>
 		<li>Aura of the guardian</li>
-		<li>Protective Spirit</li>
 		<li>Emissary of redemption</li>
 	</ul>
 	<br>
-	<li>Oath of Vengeance: Working on</li>
+	<li>Oath of Vengeance: Done</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
-			<li>Anjure Enemy: Done</li>
+			<li>Anjure Enemy</li>
 			<li>Vow of Enmity</li>
 		</ul>
 		<li>Avenging Angel</li>
@@ -97,7 +96,7 @@
 		<li>Mortal Bulwark: Waiting for feature</li>
 	</ul>
 	<br>
-	<li>Oathbreaker: Not begun</li>
+	<li>Oathbreaker: Done</li>
 	<ul>
 		<li>Channel Divinity</li>
 		<ul>
@@ -115,6 +114,13 @@
 </ul>
 <p>&nbsp;</p>
 <p>Unless I get requests from someone to focus on a subclass first I will work down the list. The exceptions will be, things that can't yet be fully automated, things that take a lot of effort. Those might be skipped.</p>
+<p>&nbsp;</p>
+<h2>Still needs to be done</h2>
+<ul>
+	<li>Ancients: Turn the faithless</li>
+	<li>Watchers: Adjure the Extraplanar</li>
+	<li>Mortal bulwark</li>
+</ul>
 <p>&nbsp;</p>
 <h2>Waiting for features in Draconic</h2>
 <p>&nbsp;</p>
