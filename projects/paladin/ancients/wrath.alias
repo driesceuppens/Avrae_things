@@ -1,58 +1,65 @@
 embed <drac2>
 
-# Variables
+# Getting the variables.
 ch,c,com,args,i,lvl,sub,cc = character(),combat(), combat() and combat().me, argparse(&ARGS&),'-i' in &ARGS&, int(get("PaladinLevel",0)),load_json(get('subclass','{"PaladinLevel": "Ancients"}')).get('PaladinLevel','').lower(),"Channel Divinity"
-targ,dc,adv,save1 = args.last('t'),ch.spellbook.dc,args.adv(),str(args.last('save')).lower()
+targ,dc,adv,save1 = args.last('t'),ch.spellbook.dc,args.adv(),args.last('save')
 
-# Making sure the adv is right.
+# Getting the adv.
 adv = [None,True,False][adv]
 
-# Pronouns
+# pronouns
 their = get('their','their')
 
-# The requiremtns
+# Requirements.
 v = (lvl>2 and sub == 'ancients') or i
 
-# Setting up the return.
+# args for the embed.
 base = f''' -thumb {image} -color {color} '''
 
-# Checking if they still have uses left.
+# Checking if the character has the counter to display.
 if ch.cc_exists(cc):
+  # Checking if they have uses left.
   if ch.get_cc(cc) == 0 and not i:
-    return base + f''' -title "{name} has no uses of {their} {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" -desc "You can use your Channel Divinity to invoke primeval forces to ensnare a foe. As an action, you can cause spectral vines to spring up and reach for a creature within 10 feet of you that you can see. The creature must succeed on a Strength or Dexterity saving throw (its choice) or be restrained. While restrained by the vines, the creature repeats the saving throw at the end of each of its turns. On a success, it frees itself and the vines vanish." '''
+    return base + f''' -title "{name} has no uses of {their} {cc} remaining!" -f "{cc}|{ch.cc_str(cc)}" '''
 
-# Checking if the character can use the ability.
+# Checking if they have the right class.
 elif lvl == 0 and not i:
   return base + f''' -title "{name} is not a paladin!"'''
-  
-# Checking the subclass.
+
+# Checking if they have the right subclass.
 if sub != "ancients" and not i:
   return base + f''' -title "{name} did not swear the oath of the Ancients!" '''
-  
-# Checking to see it it's used in combat.
+
+# Checking for combat and the requirements.
 if v and targ and com:
+  # Setting up the target and their saves
   targ = c.get_combatant(targ)
   saves = targ.saves
+  # Checking to see if it needs to find the stat to use or one was given in the input.
   if not save1:
     if max(saves.get('str').value,saves.get('dex').value) == saves.get('str').value:
       save1 = 'str'
     else:
       save1 = 'dex'
-  save = targ.save(save1,adv)
+  # Making the save.
+  save = targ.save(save1.lower(),adv)
   if save.total < dc:
-    targ.add_effect("Restrained(Nature's Wrath)",'',10,desc="- At the end of each of its turns, the target can make another Strength or Dexterity saving throw./n- On a success the effect ends.")
-    base += f''' -f "{targ.name}|**{save1} save: **{save}; Failure!/n**Effect: **Restrained(Nature's Wrath)[10 rounds]/n- At the end of each of its turns, the target can make another Strength or Dexterity saving throw./n- On a success the effect ends." '''
+    targ.add_effect("Restrained(Nature's Wrath)",'',10,desc=f"- At the end of each of its turns, the target can make another Strength or Dexterity saving throw.\n- On a success the effect ends.")
+    base += f''' -f "{targ.name}|**{save1} save: **{save}; Failure!\n**Effect: **Restrained(Nature's Wrath)[10 rounds]\n- At the end of each of its turns, the target can make another Strength or Dexterity saving throw.\n- On a success the effect ends." '''
   else:
     base += f''' -f "{targ.name}|**{save1} save: **{save}; Succes!" '''
+# The things to do even if there is no combat.
 if v:
   base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to invoke primeval forces to ensnare a foe. As an action, you can cause spectral vines to spring up and reach for a creature within 10 feet of you that you can see. The creature must succeed on a Strength or Dexterity saving throw (its choice) or be restrained. While restrained by the vines, the creature repeats the saving throw at the end of each of its turns. On a success, it frees itself and the vines vanish." '''
+  # Checking if the counter exists.
   if ch.cc_exists(cc):
     change = ''
+    # Making the changing in the counter if it's needed.
     if not i:
       ch.mod_cc(cc,-1)
       change = '(-1)'
     base += f''' -f "{cc}|{ch.cc_str(cc)} {change}" '''
-    
-# Returning the args for the embed.
+
+# returning everything.
 return base
 </drac2>
