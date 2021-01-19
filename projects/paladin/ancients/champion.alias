@@ -27,7 +27,7 @@ if v:
       return base + f''' -title "{name} Does not have any uses of {their} {cc} left." -f "{cc}|{ch.cc_str(cc)}" '''
   # Checking if combat is active to give the effects.
   if com != None:
-    c.me.add_effect("Living Legend",'',duration=10,desc="At the start of each of your turns, you regain 10 hit points.\n- Whenever you cast a paladin spell that has a casting time of 1 action, you can cast it using a bonus action instead.\n- Enemy creatures within 10 feet of you have disadvantage on saving throws against your paladin spells and Channel Divinity options.")
+    c.me.add_effect(cc,'',duration=10,desc="At the start of each of your turns, you regain 10 hit points.\n- Whenever you cast a paladin spell that has a casting time of 1 action, you can cast it using a bonus action instead.\n- Enemy creatures within 10 feet of you have disadvantage on saving throws against your paladin spells and Channel Divinity options.")
     base += f''' -f "{name}|Regains 10 hp at the start of {their} turn.\nCan ast any paladinspell taking an action as a bonus action.\nEnemies in 10 feet of you have disadvantage on saving throws agains your spells and channel divinity options." '''
   # Checking if the cc needs to be modded.
   if not i:
