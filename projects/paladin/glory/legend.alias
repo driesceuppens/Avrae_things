@@ -25,7 +25,7 @@ if v:
   if com != None:
     c.me.add_effect("Living Legend",'',duration=10,desc="Advantage on all Charisma checks.\n- Once on each of your turns when you make a weapon attack and miss, you can cause that attack to hit instead.\n- If you fail a saving throw, you can use your reaction to reroll it. You must use this new roll.")
     base += f''' -f "{name}|- Advantage on all Charisma checks.\n- Once on each of your turns when you make a weapon attack and miss, you can cause that attack to hit instead.\n- If you fail a saving throw, you can use your reaction to reroll it. You must use this new roll." '''
-  base += f''' -title "{name} uses {their} {cc}!" -desc "DESC" '''
+  base += f''' -title "{name} uses {their} {cc}!" -desc "You can empower yourself with the legends--whether true or exaggerated--of your great deeds. As a bonus action, you gain the following benefits for 1 minute:\n\n- You are blessed with an otherworldly presence, gaining advantage on all Charisma checks.\n\n- Once on each of your turns when you make a weapon attack and miss, you can cause that attack to hit instead.\n- If you fail a saving throw, you can use your reaction to reroll it. You must use this new roll.\n\nOnce you use this feature, you can't use it again until you finish a long rest, unless you expend a 5th-level spell slot to use it again." '''
   # if you want to use a slot, I'm assuming you are not trying to ignore requerments in this case.
   if slot:
     if ch.spellbook.get_slots(5) == 0:
