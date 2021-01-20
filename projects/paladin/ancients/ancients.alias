@@ -1,0 +1,19 @@
+embed {{p = ctx.prefix + ctx.alias}}
+-title "How to use all of the abilities of oath of the ancients!"
+-desc "There are 4 subcommands to `{{p}}`, turn, wrath, sentinel and champion. These activate different abilities for the subclass."
+-f "turn|To use the turn the faithless channel divinity.
+`{{p}} turn [-t target(|args)] [-i] [-dc] [adv/dis] [pass/fail]`
+Use -t to target all targets, -i to ignore restrictions, -dc to change the dc used(default in your spell save dc), use adv or dis to give advantage or disadvantage or the saves, can be uses as a target specific argument too. It works the same for pass/fail but then for automatic succes/failure."
+-f "wrath|To use the Nature's wrath channel divinity.
+`{{p}} wrath [-t target] [-i] [-dc] [-save str/dex]`
+Use -t to target and -save to change the save used to str or dex. You can ignore restrictions and not use a counter with -i. change the dc with -dc, it defaults to your spell save dc or 0 if you have none."
+-f "sentinel|To use the undying sentinel feature.
+`{{p}} sentinel [-i]`
+Use -i to ignore restrictions, will heal you to 1 hp if you're current hp is 0 otherwise will tell you you're not dying."
+-f "champion|To use the elder champion capstone.
+`{{p}} champion [-i]`
+Use -i to ingore restrictions."
+-f "Warning|If for some reason the alias is telling you that you are not an oath of the ancients paladin but you are make sure that if you use the `!level` alias you're subbed to the official gvar(the one you get by using `!level sub phb`. Otherwise change the name of the subclass to `Ancients`."
+-thumb <image>
+-color <color>
+-footer "All arguments in < args > brakets are mandatory arguments and the alias won't work without them. arguments in [args] are optional."
