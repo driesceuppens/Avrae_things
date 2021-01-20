@@ -1,4 +1,4 @@
-!alias sacred embed <drac2>
+embed <drac2>
 
 # Variables
 ch = character()
@@ -16,7 +16,7 @@ base = f''' -thumb {image} -color {color} '''
 
 # Checking if there are uses left.
 if not i:
-  if ch.cc_exists(cc):
+  if not ch.cc_exists(cc):
     return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
     
 # Doing the things
