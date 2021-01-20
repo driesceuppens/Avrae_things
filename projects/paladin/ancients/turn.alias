@@ -7,6 +7,8 @@ i = '-i' in &ARGS&
 dc = args.last('dc')
 if not dc:
   dc = ch.spellbook.dc
+  if not cd:
+    dc = 0
 adv = ["not", True, False][args.adv()]
 targs = args.get('t')
 cc = "Channel Divinity"
@@ -40,7 +42,7 @@ if v and targs and com:
       saved = how1
     else:
       save = targ.save("wis",adv1)
-      saved = save.total >= dc
+      saved = save.total >= int(dc)
     if not saved:
       targ.add_effect("Turned",'',10,desc="A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you.\n- It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving.\n- If there's nowhere to move, the creature can use the Dodge action.")
       base += f''' -f "{targ.name}|**WIS save: ** {save} Failure!\n**Effect**: Turned[10 rounds] \n - A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you.\n- It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving.\n- If there's nowhere to move, the creature can use the Dodge action." '''
