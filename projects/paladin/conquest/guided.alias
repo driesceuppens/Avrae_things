@@ -1,4 +1,4 @@
-!alias guided embed <drac2>
+embed <drac2>
 ch = character()
 c = combat()
 com = combat() and combat().me
