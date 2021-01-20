@@ -27,5 +27,5 @@ if lvl == 0:
 if sub != "devotion":
   return b + f''' -title "{name} did not sweat the oath of Devotion!" '''
 else:
-  return b + f''' -title "{name} is not yet a level 3 paladin!" '''
+  return b + f''' -title "{name} is not yet a level 20 paladin!" '''
 </drac2>
