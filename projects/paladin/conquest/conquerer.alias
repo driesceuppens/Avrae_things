@@ -1,6 +1,4 @@
 embed <drac2>
-
-# Variables
 ch = character()
 c = combat()
 com = combat() and combat().me
@@ -9,11 +7,12 @@ sub = load_json(get('subclass','{"PaladinLevel": "Conquest"}')).get('PaladinLeve
 cc = "Invincible Conqueror"
 i = '-i' in &ARGS&
 their = get('their','their')
-
-# This is stolen from the crown champion alias, look there for explanations.
 v = (lvl == 20 and sub == 'conquest') or i
 base = f''' -thumb {image} -color {color} '''
 if v:
+  if not i:
+    if not ch.get_cc(cc):
+      return base + f''' -title "{name} has no uses of {cc} left!" '''
   if com:
     c.me.add_effect("Invincible Conqueror",'-resist  acid -resist "magical bludgeoning" -resist cold -resist fire -resist force -resist lightning -resist necrotic -resist "magical piercing" -resist poison -resist psychis -resist "magical slashing" -resist thunder -resist radiant',10,desc="You have resistance to all damage.\n- When you take the Attack action on your turn, you can make one additional attack as part of that action.\n- Your melee weapon attacks score a critical hit on a roll of 19 or 20 on the d20.")
     base += f''' -f "{name}|**Effect**: Invincible Conqueror [10 rounds] (Resistance: acid, magical bludgeoning, cold, fire, force, lightning, necrotic, magical piercing, poison, psychis, magical slashing, thunder)\n- You have resistance to all damage.\n- When you take the Attack action on your turn, you can make one additional attack as part of that action.\n- Your melee weapon attacks score a critical hit on a roll of 19 or 20 on the d20." '''
