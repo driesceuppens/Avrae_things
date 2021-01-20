@@ -1,0 +1,19 @@
+embed {{p = ctx.prefix + ctx.alias}}
+-title "How to use all of the abilities of oath of the Crown!"
+-desc "There are 4 subcommands to `{{p}}`, chalenge, tide, allegiance and champion. These activate different abilities for the subclass."
+-f "challenge|To use the champions challenge channel divinity.
+`{{p}} challenge [-t target(|args)] [-i] [-dc] [adv/dis] [pass/fail]`
+Use -t to target all targets, -i to ignore restrictions, -dc to change the dc used(default in your spell save dc, or 0 if you have no spell save dc.), use adv or dis to give advantage or disadvantage or the saves, can be uses as a target specific argument too. It works the same for pass/fail but then for automatic succes/failure."
+-f "tide|To use the turn the tide channel divinity.
+`{{p}} tide [-t target] [-i]`
+Use -t to target and -i to ignore restrictions. Can be multiple targets, and they will not be healed if their hp is over half."
+-f "allegiance|To use the divine allegiance ability.
+`{{p}} allegiance <damage> [-t target] [-i]`
+Give the damage you're blocking for the target, use -t to target and it will transfer the given damage from your hp to the targets. Use -i to ignore restrictions."
+-f "champion|To use the Exhalted champion capstone.
+`{{p}} champion [-i]`
+Use -i to ingore restrictions."
+-f "Warning|If for some reason the alias is telling you that you are not an oath of the Crown paladin but you are make sure that if you use the `!level` alias you're subbed to the official gvar(the one you get by using `!level sub scag`). Otherwise change the name of the subclass to `Crown`."
+-thumb <image>
+-color <color>
+-footer "All arguments in < args > brakets are mandatory arguments and the alias won't work without them. arguments in [args] are optional."
