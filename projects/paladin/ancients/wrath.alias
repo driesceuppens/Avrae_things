@@ -4,6 +4,11 @@ embed <drac2>
 ch,c,com,args,i,lvl,sub,cc = character(),combat(), combat() and combat().me, argparse(&ARGS&),'-i' in &ARGS&, int(get("PaladinLevel",0)),load_json(get('subclass','{"PaladinLevel": "Ancients"}')).get('PaladinLevel','').lower(),"Channel Divinity"
 targ,dc,adv,save1 = args.last('t'),ch.spellbook.dc,args.adv(),args.last('save')
 
+if not dc:
+    dc = args.last('dc')
+    if not dc:
+        dc = 0
+
 # Getting the adv.
 adv = [None,True,False][adv]
 
