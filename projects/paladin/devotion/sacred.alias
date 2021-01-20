@@ -16,7 +16,7 @@ base = f''' -thumb {image} -color {color} '''
 
 # Checking if there are uses left.
 if not i:
-  if not ch.cc_exists(cc):
+  if not ch.get_cc(cc):
     return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
     
 # Doing the things
