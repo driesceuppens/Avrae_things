@@ -19,7 +19,7 @@ v = (lvl > 2 and sub == 'crown') or i
 base = f''' -thumb {image} -color {color}'''
 
 # Checking for combat and the requirments.
-if v and com:
+if v:
   # Checking if there are uses of the cc left.
   if not i:
     if not ch.get_cc(cc):
@@ -27,21 +27,22 @@ if v and com:
   # Adding the desc.
   base += f''' -title "{name} uses {their} {cc}!" -desc "As a bonus action, you can bolster injured creatures with your Channel Divinity. Each creature of your choice that can hear you within 30 feet of you regains hit points equal to 1d6 + your Charisma modifier (minimum of 1) if it has no more than half of its hit points." '''
   # adding the return for the footer since I wanted an easy solution.
-  foot = ''
-  for t in targs:
-    # Making them an combatant, then rolling the heal and healing them.
-    t = c.get_combatant(t)
-    # If they are not below half hp they are not healed.
-    if t.hp >= t.max_hp:
-      heal = vroll('1d6+'+str(bonus))
-      t.modify_hp(heal.total)
-      # Adding the roll to the return
-      base += f''' -f "{t.name}|{heal}" '''
-      foot += f'''{t.name}: {t.hp_str()}\n'''
-    else:
-      pass
-  # adding the footer
-  base += f''' -footer "{foot}" '''
+  if com and targs:
+    foot = ''
+    for t in targs:
+      # Making them an combatant, then rolling the heal and healing them.
+      t = c.get_combatant(t)
+      # If they are not below half hp they are not healed.
+      if t.hp <= t.max_hp//2:
+        heal = vroll('1d6+'+str(bonus))
+        t.modify_hp(heal.total,overflow=False)
+        # Adding the roll to the return
+        base += f''' -f "{t.name}|{heal}" '''
+        foot += f'''{t.name}: {t.hp_str()}\n'''
+      else:
+        pass
+    # adding the footer
+    base += f''' -footer "{foot}" '''
 # modding the cc if needed and returning the things, this makes it work even if there is no combat.
 if v:
   if not i:
