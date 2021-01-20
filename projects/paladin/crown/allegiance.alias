@@ -23,8 +23,8 @@ if v:
   # Can only be done if there are targets and combat.
   if com and targ:
     targ = c.get_combatant(targ)
-    targ.modify_hp(int(dam))
-    ch.modify_hp(-int(dam))
+    targ.modify_hp(int(dam), overflow=False)
+    ch.modify_hp(-int(dam),overflow=False)
     foot += f'''{targ.name}: {targ.hp_str()}\n'''
   # Adding the transferred damage to you can easily see what needs to be adjusted.
   base += f''' -f "Damage transfered|{dam}" '''
