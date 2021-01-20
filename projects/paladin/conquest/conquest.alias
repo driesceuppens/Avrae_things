@@ -1,0 +1,17 @@
+embed {{p = ctx.prefix + ctx.alias}}
+-title "How to use all of the abilities of oath of Conquest!"
+-desc "There are 3 subcommands to `{{p}}`. presence, guided and conquerer. These activate different abilities for the subclass."
+-f "presence|To use the conquering presence channel divinity.
+`{{p}} presence [-t target(|args)] [-i] [-dc] [adv/dis] [pass/fail]`
+Use -t to target all targets, -i to ignore restrictions, -dc to change the dc used(default in your spell save dc, or 0 if you have no spell save dc.), use adv or dis to give advantage or disadvantage or the saves, can be uses as a target specific argument too. It works the same for pass/fail but then for automatic succes/failure."
+-f "guided|To use the guided strike channel divinity.
+`{{p}} guided [-i] [-hit #]`
+Use -i to ignore restrictions. Use -hit with the the to hit bonus to automatically calculate the new to hit."
+-f "conquerer|To use the Invincible Conquerer capstone.
+`{{p}} conquerer [-i]`
+Use -i to ingore restrictions."
+-f "snippet|The `guided` snipped auto adds a plus 10 to your attack roll, will consume your channel divinity."
+-f "Warning|If for some reason the alias is telling you that you are not an oath of Conquest paladin but you are make sure that if you use the `!level` alias you're subbed to the official gvar(the one you get by using `!level sub xge`). Otherwise change the name of the subclass to `Conquest`."
+-thumb <image>
+-color <color>
+-footer "All arguments in < args > brakets are mandatory arguments and the alias won't work without them. arguments in [args] are optional."
