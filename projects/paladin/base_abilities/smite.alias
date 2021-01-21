@@ -8,13 +8,11 @@ crit = [False,True][args.adv(custom={'adv':'crit'})]
 extra = [False, True, True][args.adv(custom={'adv':'fiend','dis':'undead'})]
 l = args.last('l')
 i = '-i' in &ARGS&
-glory = 'glory' in &ARGS&
+inspire = 'glory' in &ARGS&
 cc = "Channel Divinity"
 sub = load_json(get("subclass","{'PaladinLevel':'Glory'}")).get("PaladinLevel","").lower() == "glory"
 if not l:
   l = 1
-if int(l) > 5:
-  l = 5
 lvl = int(get("PaladinLevel",0))
 spell = ch.spellbook
 their = get("their","their")
@@ -25,9 +23,12 @@ if v and not i:
     return base + f''' -title "{name} has no Spellslots of level {l} remaining!" '''
 if v:
   base += f''' -title "{name} uses {their} divine smite!" -desc "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend, to a maximum of 6d8." '''
-  damstr = str(max(1 + int(l),5)) + 'd8[radiant]'
+  damstr = '2d8'
+  if int(l) > 1:
+    damstr += "+" + str(min(int(l)-1,3)) + 'd8'
   if extra:
-    damstr += '+1d8[radiant]'
+    damstr += '+1d8'
+  damstr += "[radiant]"
   if com and targ:
     targ = c.get_combatant(targ)
     dam = targ.damage(damstr,crit)
@@ -39,18 +40,19 @@ if v:
       crit = 1
     dam = vroll(damstr,crit)
     base += f''' -f "Meta|**Damage**: {dam}" '''
-  if glory and sub:
-    if not i and ch.cc_exists(cc):
+    if targ:
+      base += f''' -f "{targ}|**Damage**: {dam}" '''
+  if inspire and sub:
+    smitethings = vroll(f'2d8+{lvl}')
+    if not i:
       if not ch.get_cc(cc):
-        base += f''' -f "{name}|Tried to use {their} inspiring smite!" '''
+        smitethings = f"{name} tries to use {their} Inspiring Smite!"
+    base += f''' -f "Inspiring Smite|Immediately after you deal damage to a creature with your Divine Smite feature, you can use your Channel Divinity as a bonus action and distribute temporary hit points to creatures of your choice within 30 feet of you, which can include you. The total number of temporary hit points equals 2d8 + your level in this class, divided among the chosen creatures however you like." -f "The Temp HP to distribute|{smitethings}" '''
+    if not i:
+      ch.mod_cc(cc,-1)
+      base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
     elif ch.cc_exists(cc):
-      temp = vroll(f'2d8+{lvl}')
-      base += f''' -f "Inspiring Smite|Immediately after you deal damage to a creature with your Divine Smite feature, you can use your Channel Divinity as a bonus action and distribute temporary hit points to creatures of your choice within 30 feet of you, which can include you. The total number of temporary hit points equals 2d8 + your level in this class, divided among the chosen creatures however you like." -f "The Temp HP to distribute|{temp}" '''
-      if not i:
-        ch.mod_cc(cc,-1)
-        base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
-      elif ch.cc_exists(cc):
-        base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+      base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
   if not i:
     spell.use_slot(l)
     return base + f''' -f "Spell Slots|{spell.slots_str(l)} (-1)" '''
