@@ -1,4 +1,4 @@
-!alias isnpsmite embed <drac2>
+embed <drac2>
 
 # Variables
 ch,i,lvl,sub,cc = character(),'-i' in &ARGS&, int(get("PaladinLevel",0)),load_json(get('subclass','{"PaladinLevel": "Glory"}')).get('PaladinLevel','').lower(),"Channel Divinity"
