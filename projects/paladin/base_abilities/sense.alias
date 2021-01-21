@@ -1,41 +1,23 @@
-!alias sense embed <drac2>
+embed <drac2>
 
-# Setting up the variables.
-ch = character()
-cc = "Divine Sense"
-lvl = get("PaladinLevel",0)
-i = '-i' in &ARGS&
+# variables
+ch,cc,lvl,i = character(),"Divine Sense", get("PaladinLevel",0),'-i' in &ARGS&
 v = ch.cc_exists(cc) or i
-
-# Adding the need to have counters left if you have the counter. This making it so the alias can be used without restrictions.
 if ch.cc_exists(cc):
   v = v and ch.get_cc(cc)>0
-
-# Adding my name to the alias, might be removed later.
-me = "@" + "dice#6153"
-
-# Setting up the pronouns of the character. This uses the `!pronouns` alias from @lathaon#6649.
+if not v:
+  return f''' -thumb {image} -color {color} -title "{name}  is not a paladin!" '''
 they,them,their,theirs = get('they','they'), get('them','them'), get('their','their'), get('theirs','theirs')
-
-# Setting up the base to return the args for the embed.
-base = f''' -thumb {image} -color {color} -footer "Made by {me}" '''
-
-# getting the stuff to work.
+base = f''' -thumb {image} -color {color} '''
 change = ''
 if v:
   base += f''' -title "{name} uses {their} {cc}!" -desc "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity (the vampire Count Strahd von Zarovich, for instance). Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell." '''
-
-# If you have no uses left.
 else:
   base += f''' -title "{name} has no uses of {their} {cc} left." '''
-
-# Adding and modding the counter.
 if not i and ch.cc_exists(cc) and ch.get_cc(cc)>0:
   ch.mod_cc(cc,-1)
   change = '(-1)'
 if ch.cc_exists(cc):
   base += f''' -f "{cc}|{ch.cc_str(cc)} {change}" '''
-
-# returning the arguments for the embed
 return base
 </drac2>
