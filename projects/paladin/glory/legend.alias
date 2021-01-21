@@ -19,6 +19,10 @@ v = (lvl == 20 and sub == 'glory') or i
 # Setting up the return
 base = f''' -thumb {image} -color {color} '''
 
+if not i and not slot:
+  if not ch.get_cc(cc):
+    return base + f''' -title "{name} hase no uses of {their} {cc} left!" -f "{cc}|{ch.cc_str(cc)}" '''
+
 # Going to the requiremtens to do the things needed.
 if v:
   # Checking for combat and to add the effects.
