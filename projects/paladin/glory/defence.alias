@@ -23,13 +23,16 @@ v = (lvl > 14 and sub == 'glory') or i
 base = f''' -thumb {image} -color {color} '''
 
 # If there is no combat you can use the ability, just not target someone. Might change it the future.
-if v and not com and ac:
+if v and not com:
   # Add the desciption.
   base += f''' -title "{name} uses {their} {cc}!" -desc "You can turn defense into a sudden strike. When you or another creature you can see within 10 feet of you is hit by an attack roll, you can use your reaction to grant a bonus to the target's AC against that attack, potentially causing it to miss. The bonus equals your Charisma modifier (minimum of +1). If the attack misses, you can make one weapon attack against the attacker as part of this reaction, provided the attacker is within your weapon's range." '''
   # Get the new AC, this is not possible if no AC was giving so the -ac arguments is required for this.
-  som = str(ac) + '+' + str(bonus)
-  # Adding the title and new ac to the return.
-  base += f''' -title "{name} uses {cc} to protect someone." -f "New Ac|{vroll(som)}" '''
+  if ac:
+    som = str(ac) + '+' + str(bonus)
+    # Adding the title and new ac to the return.
+    base += f''' -title "{name} uses {cc} to protect someone!" -f "New Ac|{vroll(som)}" '''
+  else:
+    base += f''' -title "{name} uses {cc} to protect someone!" -f "AC|**bonus**: +{bonus}" '''
   # Checking to mod the cc, And returning.
   if not i:
     ch.mod_cc(cc,-1)
