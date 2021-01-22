@@ -28,9 +28,9 @@ if v:
   # Adding the effect if there is combat and a target.
   if com and targ:
     targ = c.get_combatant(targ)
-    c.me.add_effect("Vow of Enmity",'')
+    c.me.add_effect("Vow of Enmity",'',10)
     effc = c.me.get_effect("Vow of Emity")
-    targ.add_effect("Vow of Enmity",'',10, parent= effc, desc=f"{name} has advantage on all attack rolls against {targ.name}.")
+    targ.add_effect("Vow of Enmity",'',10, parent= effc, desc=f"{name} has advantage on all attack rolls against {targ.name}.\n - The effect ends in {targ.name} drops to 0 hp or falls unconsious.")
     base += f''' -f "{targ.name}|**Effect**: Vow of Enmity[10 rounds]\n- {name} has advantage against {targ.name}\n- The effect ends in {targ.name} drops to 0 hp or falls unconsious." '''
   # Checking to use a counter.
   if not i:
