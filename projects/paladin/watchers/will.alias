@@ -1,4 +1,4 @@
-!alias will embed <drac2>
+embed <drac2>
 
 # Setting up the variables
 ch = character()
@@ -6,7 +6,7 @@ c = combat()
 com = combat() and combat().me
 args = argparse(&ARGS&)
 i = '-i' in &ARGS&
-lvl = get("PaladinLevel",0)
+lvl = int(get("PaladinLevel",0))
 sub = load_json(get('subclass','{"PaladinLevel": "The Watchers"}')).get('PaladinLevel','')
 cc = "Channel Divinity"
 
@@ -18,10 +18,10 @@ they,them,their,theirs = get('they','they'),get('them','them'),get('their','thei
 sthey,sthem = 's' if they != 'he' or they != 'she' else '','s' if them != 'him' or them != 'her' else ''
 
 # Setting up the requerments.
-v = (lvl>3 and sub == 'The Watchers') or i
+v = (lvl>2 and sub == 'The Watchers') or i
 
 # Setting up the return arguments for the embed.
-base = f''' -thumb {image} -coor {color} '''
+base = f''' -thumb {image} -color {color} '''
 
 # Making sure the ability can be used.
 if v:
@@ -32,8 +32,10 @@ if v:
   # If you're in combat adding the effecs onto the targets and yourself.
   if com != None:
     targs.append(name)
-    for j in targs:
-      j = c.get_combatant(j)
+    for jo in targs:
+      j = c.get_combatant(jo)
+      if not j:
+        err(f"{jo} is not a valid target, make sure to target a combatant.")
       j.add_effect("Watchers will",'',duration=10,desc=" Advantage on wisdom, inteligence and charisma saving throws.")
       base += f''' -f "{j.name}| Advantage on wisdom, inteligence and charisma saving throws." '''
 
