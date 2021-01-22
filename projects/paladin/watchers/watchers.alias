@@ -1,0 +1,19 @@
+embed {{p = ctx.prefix + ctx.alias}}
+-title "How to use all of the abilities of oath of the watchers!"
+-desc "There are 4 sub commands to `{{p}}`. abjure, will, rebuke and bulwark. These activate different abilities for the subclass."
+-f "abjure|To use the Abjure the extra planar channel divinity.
+`{{p}} abjure [-t target(|args)] [-i] [-dc dc] [adv/dis] [pass/fail]`
+Use -t to target all targets, -i to ignore restrictions, -dc to change the dc used(default in your spell save dc), use adv or dis to give advantage or disadvantage or the saves, can be uses as a target specific argument too. It works the same for pass/fail but then for automatic success/failure."
+-f "will|To use the Watcher's will channel divinity.
+`{{p}} will [-t target] [-i]`
+Use -t to target and -i to ignore restrictions."
+-f "rebuke|To use the rebuke the violent feature.
+`{{p}} rebuke [-t target] [-i]`
+Use use -t to target and -i to ignore restrictions"
+-f "bulwark|To use the Watcher's Bulwark capstone.
+`{{p}} bulwark[-i]`
+Use -i to ignore restrictions."
+-f "Warning|If for some reason the alias is telling you that you are not an oath of the watchers paladin but you are make sure that if you use the `!level` alias you're subbed to the official gvar(the one you get by using `!level sub tce`. Otherwise change the name of the subclass to `The Watchers`."
+-thumb <image>
+-color <color>
+-footer "All arguments in < args > brakets are mandatory arguments and the alias won't work without them. arguments in [args] are optional."
