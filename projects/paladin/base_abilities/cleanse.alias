@@ -1,4 +1,4 @@
-!alias cleanse embed <drac2>
+embed <drac2>
 
 # Do I really need to write How this works it's modding one cc...
 ch = character()
@@ -8,7 +8,7 @@ i = '-i' in &ARGS&
 their = get('their','their')
 v = lvl > 13 or i
 base = f''' -thumb {image} -color {color} '''
-if not i:
+if not i and ch.cc_exists(cc):
   if not ch.get_cc(cc):
     return base + f''' -title "{name} has no uses of {their} {cc} left!" '''
   ch.mod_cc(cc,-1)
