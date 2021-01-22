@@ -9,6 +9,8 @@ if not dc:
   dc = ch.spellbook.dc
   if not cd:
     dc = 0
+if not dc.isdigit():
+  err("Make sure that the input DC is a number.")
 adv = ["not", True, False][args.adv()]
 targs = args.get('t')
 cc = "Channel Divinity"
@@ -37,6 +39,8 @@ if v and targs and com:
     else:
       how1 = how
     targ = c.get_combatant(targ)
+    if not targ:
+      err(f"{t[0]} is not a valid target.")
     if how1 != "not":
       save = "Automatic"
       saved = how1
