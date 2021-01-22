@@ -21,7 +21,7 @@ sub = load_json(get("subclass","{'PaladinLevel':'Glory'}")).get("PaladinLevel","
 if not l:
   l = 1
 if not str(l).isdigit():
-  err(f"{l} is not a valid level of spellslot, make sure to use a number."
+  err(f"{l} is not a valid level of spellslot, make sure to use a number.")
 if int(l) > 9:
   err(f"{l} is too high of a level for spellslots, make sure to use a number that is 9 or lower.")
 lvl = int(get("PaladinLevel",0))
