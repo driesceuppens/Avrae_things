@@ -7,6 +7,10 @@ i = '-i' in &ARGS&
 dc = args.last('dc')
 if not dc:
   dc = ch.spellbook.dc
+  if not dc:
+    dc = 0
+if not dc.isdigit():
+  err("Make sure that that the input dc is a number.")
 adv = ["not", True, False][args.adv()]
 targs = args.get('t')
 cc = "Channel Divinity"
@@ -35,15 +39,17 @@ if v and targs and com:
     else:
       how1 = how
     targ = c.get_combatant(targ)
+    if not targ:
+      err(f"{t[0]} is not a valid target.")
     if how1 != "not":
       save = "Automatic"
       saved = how1
     else:
       save = targ.save("wis",adv1)
-      saved = save.total >= dc
+      saved = save.total >= int(dc)
     if not saved:
       targ.add_effect("Turned",'',10,desc=f"The target is frightened of {name}.\n- A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action.")
-      base += f''' -f "{targ.name}|**WIS save: ** {save} Failure!\n**Effect**: Frightened \n- A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action." '''
+      base += f''' -f "{targ.name}|**WIS save: ** {save} Failure!\n**Effect**: Turned \n- A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action." '''
     else:
       base += f''' -f "{targ.name}|**WIS save: ** {save} Success!" '''
   base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to castigate unworldly beings. As an action, you present your holy symbol and each aberration, celestial, elemental, fey, or fiend within 30 feet of you that can hear you must make a Wisdom saving throw. On a failed save, the creature is turned for 1 minute or until it takes damage. A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can take the Dodge action." '''
