@@ -4,7 +4,7 @@ c = combat()
 com = c and c.me
 args = argparse(&ARGS&)
 i = '-i' in &ARGS&
-if not &ARGS&:
+if not &ARGS& or not &ARGS&[0].isdigit():
   return f''' -title "Pass the damage as an argument!" -desc "use `{ctx.prefix + ctx.alias} guardian <damage> [-t target] [-i]`" -thumb {image} -color {color} '''
 dam = &ARGS&[0]
 targ = args.last('t')
@@ -16,7 +16,10 @@ base = f''' -thumb {image} -color {color}'''
 if v:
   foot = ''
   if com and targ:
+    tar = targ
     targ = c.get_combatant(targ)
+    if not targ:
+      err(f"{tar} is not a valid target.")
     targ.modify_hp(int(dam))
     ch.modify_hp(-int(dam))
     foot += f'''{targ.name}: {targ.hp_str()}\n'''
