@@ -1,0 +1,17 @@
+embed {{p = ctx.prefix + ctx.alias}}
+-title "How to use all of the abilities of oath of the watchers!"
+-desc "There are 3 sub commands to `{{p}}`. abjure, enmity and angel. These activate different abilities for the subclass."
+-f "abjure|To use the Abjure Enemy channel divinity.
+`{{p}} abjure [-t target(|args)] [-i] [-dc dc] [adv/dis] [pass/fail]`
+Use -t to target all targets, -i to ignore restrictions, -dc to change the dc used(default in your spell save dc), use adv or dis to give advantage or disadvantage or the saves, can be uses as a target specific argument too. It works the same for pass/fail but then for automatic success/failure."
+-f "enmity|To use the Vow of Enmity channel divinity.
+`{{p}} enmity [-t target] [-i]`
+Use -t to target and -i to ignore restrictions."
+-f "angel|To use the Avenging Angel capstone.
+`{{p}} angel [-i]`
+Use -i to ignore restrictions."
+-f "Snippets|The `vengeance` snippet can be added to your attacks When you are using the Soul of Vengeance ability. The `enmity` snippet can be added to your attacks after using the `{{p}} enmity` alias to gain advantage."
+-f "Warning|If for some reason the alias is telling you that you are not an oath of Vengeance paladin but you are make sure that if you use the `!level` alias you're subbed to the official gvar(the one you get by using `!level sub phb`. Otherwise change the name of the subclass to `Vengeance`."
+-thumb <image>
+-color <color>
+-footer "All arguments in < args > brakets are mandatory arguments and the alias won't work without them. arguments in [args] are optional."
