@@ -14,12 +14,14 @@ if not dc:
   dc = ch.spellbook.dc
   if not dc:
     dc = 0
+if not str(dc).isdigit():
+  err(f"{dc} is not a valid DC, make sure it is a number.")
 adv = [None,True,False][args.adv()]
 how = ["not",True,False][args.adv(custom={'adv':'pass','dis':'fail'})]
 targ = args.last('t')
 dam = args.last('d')
-if not dam:
-  return f''' -title "Pass the damage first!" -desc "use `{ctx.prefix + ctx.alias} violent <-d damage> [-t target] [-dc dc] [adv/dis] [pass/fail] [-i]`" -thumb {image} -color {color} '''
+if not dam or not dam.isdigit():
+  return f''' -title "Pass the damage first!" -desc "use `{ctx.prefix + ctx.alias} violent <-d damage> [-t target] [-dc dc] [adv/dis] [pass/fail] [-i]`\nMake sure the damage is a number." -thumb {image} -color {color} '''
 their = get('their','their')
 
 # Requirments + return
@@ -31,7 +33,10 @@ if not i and v:
 if v:
   base += f''' -f "Meta|**Damage**: {dam}[radiant]\n**DC**: {dc}" '''
   if com and targ:
+    tar = targ
     targ = c.get_combatant(targ)
+    if not targ:
+      err(f"{tar} is not a valid target.")
     if how != "not":
       saved = how
       save = "Automatic"
