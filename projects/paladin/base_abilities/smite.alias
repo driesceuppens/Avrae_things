@@ -1,16 +1,23 @@
 embed <drac2>
+
+# First of all Huge props to @kortar#9227 for allowing me to adapts and use his `!smite` alias. This is that one slightly changed and put into drac2. That's all.
+
+# Variables
 ch = character()
 c = combat()
 com = c and c.me
 args = argparse(&ARGS&)
 targ = args.last('t')
+# Checking for crits
 crit = [False,True][args.adv(custom={'adv':'crit'})]
+# checking for the extra dice, using both at the same time will result in none since creatures can't both be undead and fiends, don't cheat.
 extra = [False, True, True][args.adv(custom={'adv':'fiend','dis':'undead'})]
 l = args.last('l')
 i = '-i' in &ARGS&
 inspire = 'glory' in &ARGS&
 cc = "Channel Divinity"
 sub = load_json(get("subclass","{'PaladinLevel':'Glory'}")).get("PaladinLevel","").lower() == "glory"
+# if no level has been given makiing sure it's 1.
 if not l:
   l = 1
 lvl = int(get("PaladinLevel",0))
@@ -18,41 +25,59 @@ spell = ch.spellbook
 their = get("their","their")
 v = lvl > 1 or i
 base = f''' -thumb {image} -color {color} '''
+# Checking if there are slots left to smite with.
 if v and not i:
   if not spell.get_slots(l):
     return base + f''' -title "{name} has no Spellslots of level {l} remaining!" '''
+# Checking the requirments
 if v:
+  # Adding the title and base.
   base += f''' -title "{name} uses {their} divine smite!" -desc "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend, to a maximum of 6d8." '''
+  # making the damage string. this way the base damage, the extra dice from higher levels and the extra die from a fiend or undead are all seperated.
   damstr = '2d8'
   if int(l) > 1:
+    # Making sure that there can't be more then 5 dice of damage for smite(exculting the extra dice)
     damstr += "+" + str(min(int(l)-1,3)) + 'd8'
+  # The extra damage die
   if extra:
     damstr += '+1d8'
+  # Adding the damage type
   damstr += "[radiant]"
+  # dealing the damage if there is combat
   if com and targ:
+    # Making a combatant from the target
     targ = c.get_combatant(targ)
+    # dealing the damage
     dam = targ.damage(damstr,crit)
+    # Adding the dealt damage
     base += f''' -f "{targ.name}|**Damage**: {dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
+  # IF there is no combat or no target given showing the damage roll.
   else:
     if crit:
       crit = 2
     else:
       crit = 1
     dam = vroll(damstr,crit)
-    base += f''' -f "Meta|**Damage**: {dam}" '''
+    # If there is a target adding the damage with the target, otherwise just meta.
     if targ:
       base += f''' -f "{targ}|**Damage**: {dam}" '''
+    else:
+      base += f''' -f "Meta|**Damage**: {dam}" '''
+  # Checking to see if the inspiring smite is used,(this part is has been added by me)
   if inspire and sub:
     smitethings = vroll(f'2d8+{lvl}')
     if not i:
       if not ch.get_cc(cc):
         smitethings = f"{name} tries to use {their} Inspiring Smite!"
+    # Adding the desc and the rolled temp hp to add
     base += f''' -f "Inspiring Smite|Immediately after you deal damage to a creature with your Divine Smite feature, you can use your Channel Divinity as a bonus action and distribute temporary hit points to creatures of your choice within 30 feet of you, which can include you. The total number of temporary hit points equals 2d8 + your level in this class, divided among the chosen creatures however you like." -f "The Temp HP to distribute|{smitethings}" '''
+    #modding the cc for channel divinity.
     if not i:
       ch.mod_cc(cc,-1)
       base += f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
     elif ch.cc_exists(cc):
       base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
+  # using the spellslot
   if not i:
     spell.use_slot(l)
     return base + f''' -f "Spell Slots|{spell.slots_str(l)} (-1)" '''
