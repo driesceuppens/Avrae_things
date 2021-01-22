@@ -12,10 +12,14 @@ args = argparse(&ARGS&)
 dc = args.last('dc')
 if not dc:
   dc = ch.spellbook.dc
+  if not dc:
+    dc = 0
 adv = [None,True,False][args.adv()]
 how = ["not",True,False][args.adv(custom={'adv':'pass','dis':'fail'})]
 targ = args.last('t')
 dam = args.last('d')
+if not dam:
+  return f''' -title "Pass the damage first!" -desc "use `{ctx.prefix + ctx.alias} violent <-d damage> [-t target] [-dc dc] [adv/dis] [pass/fail] [-i]`" -thumb {image} -color {color} '''
 their = get('their','their')
 
 # Requirments + return
@@ -33,7 +37,7 @@ if v:
       save = "Automatic"
     else:
       save = targ.save("wis",adv)
-      saved = save.total >= dc
+      saved = save.total >= int(dc)
     if saved:
       dam = targ.damage(str(int(dam)//2)+'[radiant]')
       base += f''' -f "{targ.name}|**WIS save**: {save}  Succes!\n**Damage**: {2*int(dam.total)} / 2 [radiant] = {dam.total}" -footer "{targ.name}: {targ.hp_str()}" '''
