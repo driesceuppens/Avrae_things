@@ -27,7 +27,10 @@ if v:
   base += f''' -title "{name} uses {their} {cc}!" -desc "As a bonus action, you can utter a vow of enmity against a creature you can see within 10 feet of you, using your Channel Divinity. You gain advantage on attack rolls against the creature for 1 minute or until it drops to 0 hit points or falls unconscious." '''
   # Adding the effect if there is combat and a target.
   if com and targ:
+    tar = targ
     targ = c.get_combatant(targ)
+    if not targ:
+      err(f"{tar} is not a valid target.")
     c.me.add_effect("Vow of Enmity",'',10)
     effc = c.me.get_effect("Vow of Emity")
     targ.add_effect("Vow of Enmity",'',10, parent= effc, desc=f"{name} has advantage on all attack rolls against {targ.name}.\n - The effect ends in {targ.name} drops to 0 hp or falls unconsious.")
