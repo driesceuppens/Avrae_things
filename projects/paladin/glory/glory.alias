@@ -1,0 +1,20 @@
+embed {{p = ctx.prefix + ctx.alias}}
+-title "How to use all of the abilities of oath of Glory!"
+-desc "There are 4 sub commands to `{{p}}`. athlete, smite, defence and legend. These activate different abilities for the subclass."
+-f "athlete|To use the Peerless Athlete channel divinity.
+`{{p}} athlete [-i]`
+Use -i to ignore restrictions."
+-f "smite|To use the Inspiring Smite channel divinity.
+`{{p}} smite [-i]`
+Use -i to ignore restrictions. This ability can also be used in the `{{ctx.prefix}}smite` alias by adding `glory` as an argument."
+-f "defence|To use the Glorious Defence feature.
+`{{p}} defence [-t target] [-ac] [-i]`
+Use use -t to target and -i to ignore restrictions, if you use the alias outside of combat(or the ac of the target is not right for some reason) you can use the -ac argument to pass the current ac and it will tell you the new ac."
+-f "legend|To use the Living Legend capstone.
+`{{p}} legend [-i]`
+Use -i to ignore restrictions."
+-f "Snippets|The  `lattack` snippet can be added to your attacks, the `lsave` to your saves and the `lcheck` to your Charisma checks after using the `{{p}} legend` alias to add a description of the effect."
+-f "Warning|If for some reason the alias is telling you that you are not an oath of glory paladin but you are make sure that if you use the `!level` alias you're subbed to the official gvar(the one you get by using `!level sub tce`. Otherwise change the name of the subclass to `Glory`."
+-thumb <image>
+-color <color>
+-footer "All arguments in < args > brakets are mandatory arguments and the alias won't work without them. arguments in [args] are optional."
