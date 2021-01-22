@@ -9,7 +9,7 @@ if not dc:
   dc = ch.spellbook.dc
   if not dc:
     dc = 0
-if not dc.isdigit():
+if not str(dc).isdigit():
   err("Make sure that that the input dc is a number.")
 adv = ["not", True, False][args.adv()]
 targs = args.get('t')
