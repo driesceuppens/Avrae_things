@@ -5,20 +5,22 @@ ch = character()
 c = combat()
 com = combat() and combat().me
 lvl = int(get("PaladinLevel",0))
-sub = load_json(get('subclass','{"PaladinLevel": "Vengance"}')).get('PaladinLevel','').lower()
+sub = load_json(get('subclass','{"PaladinLevel": "Vengeance"}')).get('PaladinLevel','').lower()
 cc = "Channel Divinity"
 i = '-i' in &ARGS&
 args = argparse(&ARGS&)
 dc = args.last('dc')
 if not dc:
   dc = ch.spellbook.dc
+  if not dc:
+    dc = 0
 adv = [None,True,False][args.adv()]
 how = ["not",True,False][args.adv(custom={'adv':'pass','dis':'fail'})]
 targ = args.last('t')
 their = get('their','their')
 
 # Requirments + return
-v = (lvl > 2 and sub == 'vengance') or i
+v = (lvl > 2 and sub == 'vengeance') or i
 base = f''' -thumb {image} -color {color} '''
 if not i:
   if not ch.get_cc(cc):
@@ -32,7 +34,7 @@ if v:
       save = False
     else:
       save = targ.save("wis",adv)
-      saved = save.total >= dc
+      saved = save.total >= int(dc)
     if saved:
       targ.add_effect("Abjure Enemy",'',10,desc="The creature's speed is halved for 1 minute or until the creature takes any damage")
       base += f''' -f "{targ.name}|**WIS save**: {save if save else "Automatic"}  Succes!\n- The creature's speed is halved for 1 minute or until the creature takes any damage" '''
@@ -47,9 +49,9 @@ if v:
     base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
   return base
 if lvl == 0:
-  return b + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to summon the holy powers of the paladin?" '''
-if sub != "vengance":
-  return b + f''' -title "{name} did not sweat the oath of Vengance!" '''
+  return base + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to summon the holy powers of the paladin?" '''
+if sub != "vengeance":
+  return base + f''' -title "{name} did not sweat the oath of Vengance!" '''
 else:
-  return b + f''' -title "{name} is not yet a level 3 paladin!" '''
+  return base + f''' -title "{name} is not yet a level 3 paladin!" '''
 </drac2>
