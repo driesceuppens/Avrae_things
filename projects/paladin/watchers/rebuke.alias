@@ -1,4 +1,4 @@
-!alias Rebuke embed <drac2>
+embed <drac2>
 
 # Setting the relevant variables.
 ch = character()
@@ -24,23 +24,28 @@ v = (lvl>14 and sub == 'The Watchers') or i
 base = f''' -thumb {image} -color {color} '''
 
 # Making sure it is used in combat.
-if not com:
-  base += f''' -title "{name} is not in combat." -desc "This ability can only be used in combat." '''
+if not com or not targ:
+  dam = vroll("2d8 + " + str(cha) + "[force]")
+  base += f''' -f "Meta|**Damage**: {dam}" '''
 
 # Executing the alias to damage the target.
-if v and targ:
+if v and com and targ:
+  tar = targ
   targ = c.get_combatant(targ)
-  dam = targ.damage("2d8",d=cha)
+  if not targ:
+    err(f"{tar} is not a valid target.")
+  dam = targ.damage("2d8 + " + str(cha) + "[force]")
   base += f''' -f "{targ.name}|Damage: {dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
 
 if v:
   base += f''' -title "{name} uses {their} Vigilant Rebuke!" -desc "You've learned how to chastise anyone who dares wield beguilements against you and your wards. Whenever you or a creature you can see within 30 feet of you succeeds on an Intelligence, a Wisdom, or a Charisma saving throw, you can use your reaction to deal 2d8 + your Charisma modifier force damage to the creature that forced the saving throw." '''
+  return base
 
 # Exceptions for when the requirements are not met.
 elif lvl == 0:
   base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
 elif not sub == 'The Watchers':
-  base += f''' -title "{name} did not swear the oath of the watchers." -footer "If you are a oath of the watchers paladin and use the `!level` alias make sure you are using `28b5f063-1188-4db3-9068-990152b2e459` gvar to sub to and the subclass is named `The Watchers`" '''
+  base += f''' -title "{name} did not swear the oath of the watchers." '''
 else:
    base += f''' -title "{name} is not yet a level 15 paladin." '''
 
