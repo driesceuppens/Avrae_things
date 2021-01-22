@@ -11,6 +11,9 @@ cc = "Glorious Defense"
 args = argparse(&ARGS&)
 t = args.last('t')
 ac = args.last('ac')
+if ac:
+  if not ac.isdigit():
+    err(f"{ac} is not a valit AC, make sure it is a number.")
 bonus = max(charismaMod,1)
 
 # Pronouns
@@ -49,7 +52,10 @@ if v and com:
   # Adding the description.
   base += f''' -title "{name} uses {their} {cc}!" -desc "You can turn defense into a sudden strike. When you or another creature you can see within 10 feet of you is hit by an attack roll, you can use your reaction to grant a bonus to the target's AC against that attack, potentially causing it to miss. The bonus equals your Charisma modifier (minimum of +1). If the attack misses, you can make one weapon attack against the attacker as part of this reaction, provided the attacker is within your weapon's range." '''
   # Making the target a simplecombatant
+  tar = t
   t = c.get_combatant(t)
+  if not t:
+    err(f"{tar} is not a valid target.")
   # This check really is redundant since it should always give the targets ac but let's keep it in for now.
   if not ac:
     ac = t.ac
