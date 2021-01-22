@@ -14,6 +14,8 @@ if not dc:
   dc = ch.spellbook.dc
   if not dc:
     dc = 0
+if not str(dc).isdigit():
+  err(f"{dc} is not a valid DC, make sure it is a number.")
 adv = [None,True,False][args.adv()]
 how = ["not",True,False][args.adv(custom={'adv':'pass','dis':'fail'})]
 targ = args.last('t')
@@ -28,7 +30,10 @@ if not i:
 if v:
   base += f''' -f "Meta|**DC**: {dc}" '''
   if com and targ:
+    tar = targ
     targ = c.get_combatant(targ)
+    if not targ:
+      err(f"{tar} is not a valid target.")
     if how != "not":
       saved = how
       save = False
