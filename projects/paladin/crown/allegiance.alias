@@ -6,6 +6,8 @@ c = combat()
 com = c and c.me
 args = argparse(&ARGS&)
 i = '-i' in &ARGS&
+if not &ARGS& or not &ARGS&[0].isdigit():
+  err(f"Use `{ctx.prefix + ctx.alias} allegiance <damage> [args]` and make sure that the damage is a number.")
 dam = &ARGS&[0]
 targ = args.last('t')
 sub = load_json(get('subclass','{"PaladinLevel":"Crown"}')).get("PaladinLevel","").lower()
@@ -22,7 +24,10 @@ if v:
   foot = ''
   # Can only be done if there are targets and combat.
   if com and targ:
+    tar = targ
     targ = c.get_combatant(targ)
+    if not targ:
+      err(f"{tar} is not a valid target.")
     targ.modify_hp(int(dam), overflow=False)
     ch.modify_hp(-int(dam),overflow=False)
     foot += f'''{targ.name}: {targ.hp_str()}\n'''
