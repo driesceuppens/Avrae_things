@@ -4,10 +4,17 @@ embed <drac2>
 ch,c,com,args,i,lvl,sub,cc = character(),combat(), combat() and combat().me, argparse(&ARGS&),'-i' in &ARGS&, int(get("PaladinLevel",0)),load_json(get('subclass','{"PaladinLevel": "Ancients"}')).get('PaladinLevel','').lower(),"Channel Divinity"
 targ,dc,adv,save1 = args.last('t'),ch.spellbook.dc,args.adv(),args.last('save')
 
+# making sure a dc is defined and that it's a number
 if not dc:
     dc = args.last('dc')
     if not dc:
         dc = 0
+if not dc.isdigit():
+  err("Enter a number for the DC.")
+
+if save1:
+  if not save1.lower() in ["str","dex","strength","dexterity"]:
+    err("Make sure that the input save is either 'str' or 'dex'.")
 
 # Getting the adv.
 adv = [None,True,False][adv]
@@ -38,7 +45,10 @@ if sub != "ancients" and not i:
 # Checking for combat and the requirements.
 if v and targ and com:
   # Setting up the target and their saves
+  tar = targ
   targ = c.get_combatant(targ)
+  if not targ:
+    err(f"{tar} is not a valid target.")
   saves = targ.saves
   # Checking to see if it needs to find the stat to use or one was given in the input.
   if not save1:
