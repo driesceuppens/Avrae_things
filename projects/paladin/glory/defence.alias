@@ -1,4 +1,4 @@
-!alias defence embed <drac2>
+embed <drac2>
 
 # Variables
 ch = character()
@@ -48,7 +48,7 @@ if v and not com:
 if v and com:
   # Checking if there is a target.
   if not t:
-    return base + f''' -title "{name} Does't protect anyone!" -desc "Use -t to target someone in combat." '''
+    return base + f''' -title "{name} does't protect anyone!" -desc "Use -t to target someone in combat." '''
   # Adding the description.
   base += f''' -title "{name} uses {their} {cc}!" -desc "You can turn defense into a sudden strike. When you or another creature you can see within 10 feet of you is hit by an attack roll, you can use your reaction to grant a bonus to the target's AC against that attack, potentially causing it to miss. The bonus equals your Charisma modifier (minimum of +1). If the attack misses, you can make one weapon attack against the attacker as part of this reaction, provided the attacker is within your weapon's range." '''
   # Making the target a simplecombatant
