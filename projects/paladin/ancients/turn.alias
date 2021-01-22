@@ -7,9 +7,9 @@ i = '-i' in &ARGS&
 dc = args.last('dc')
 if not dc:
   dc = ch.spellbook.dc
-  if not cd:
+  if not dc:
     dc = 0
-if not dc.isdigit():
+if not str(dc).isdigit():
   err("Make sure that the input DC is a number.")
 adv = ["not", True, False][args.adv()]
 targs = args.get('t')
