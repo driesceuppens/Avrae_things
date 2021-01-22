@@ -4,29 +4,31 @@ c = combat()
 com = c and c.me
 args = argparse(&ARGS&)
 i = '-i' in &ARGS&
+if not &ARGS&:
+  return f''' -title "Pass the damage as an argument!" -desc "use `{ctx.prefix + ctx.alias} guardian <damage> [-t target] [-i]`" -thumb {image} -color {color} '''
+dam = &ARGS&[0]
+targ = args.last('t')
 sub = load_json(get('subclass','{"PaladinLevel":"Redemption"}')).get("PaladinLevel","").lower()
 lvl = int(get("PaladinLevel",0))
-cc = "Channel Divinity"
 their = get('their','their')
-v = (lvl > 2 and sub == 'redemption') or i
+v = (lvl > 6 and sub == 'redemption') or i
 base = f''' -thumb {image} -color {color}'''
 if v:
-  if not i:
-    if not ch.get_cc(cc):
-      return base + f''' -title "{name} has no uses left of {cc}!" '''
-  if com:
-    c.me.add_effect("Emissary of Peace",'',100,desc=f"{name} gains a +5 bonus to Charisma (Persuasion) checks for the next 10 minutes.")
-  base += f''' -title "{name} uses {their} {cc}!" -desc "You can use your Channel Divinity to augment your presence with divine power. As a bonus action, you grant yourself a +5 bonus to Charisma (Persuasion) checks for the next 10 minutes." -f "{name}|**Effect**: Emissary of Peace[100 rounds]\n- {name} gains a +5 bonus on all Charisma (Persuasion) checks." '''
-  if not i:
-    ch.mod_cc(cc,-1)
-    return base + f''' -f "{cc}|{ch.cc_str(cc)} (-1)" '''
-  if ch.cc_exists(cc):
-    base += f''' -f "{cc}|{ch.cc_str(cc)}" '''
-  return base
+  foot = ''
+  if com and targ:
+    targ = c.get_combatant(targ)
+    targ.modify_hp(int(dam))
+    ch.modify_hp(-int(dam))
+    foot += f'''{targ.name}: {targ.hp_str()}\n'''
+  base += f''' -f "Damage transfered|{dam}" '''
+  ch.modify_hp(-int(dam))
+  foot += f'''{name}: {ch.hp_str()}'''
+  return base + f''' -title "{name} uses {their} Aura of the Guardian to protect {targ.name if targ else 'someone'}!" -desc "Starting at 7th level, you can shield others from harm at the cost of your own health. When a creature within 10 feet of you takes damage, you can use your reaction to magically take that damage, instead of that creature taking it. This feature doesn't transfer any other effects that might accompany the damage, and this damage can't be reduced in any way." -footer "{foot}" '''
 if lvl == 0:
-  return base + f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the holy power of the paladins?" '''
-if sub != "redemption":
-  return base + f''' -title "{name} did not break their Oath!" '''
+  base += f''' -title "{name} is not a paladin!" -desc "Why are you even trying to channel the divine power from the paladins?" '''
+elif not sub == 'redemption':
+  base += f''' -title "{name} did not swear the oath the Crown." '''
 else:
-  return base + f''' -title "{name} is not yet a level 3 Paladin!" '''
+   base += f''' -title "{name} is not yet a level 7 paladin." '''
+return base
 </drac2>
