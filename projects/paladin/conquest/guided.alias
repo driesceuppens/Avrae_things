@@ -8,6 +8,9 @@ cc = "Channel Divinity"
 i = '-i' in &ARGS&
 args = argparse(&ARGS&)
 hit = args.last('hit')
+if hit:
+  if not hit.isdigit():
+    err(f"{hit} is not a valid to hit, make sure to enter a number.")
 their = get('their','their')
 v = (lvl > 2 and sub == 'conquest') or i
 base = f''' -thumb {image} -color {color} '''
