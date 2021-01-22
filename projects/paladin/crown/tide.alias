@@ -31,7 +31,10 @@ if v:
     foot = ''
     for t in targs:
       # Making them an combatant, then rolling the heal and healing them.
+      targ = t
       t = c.get_combatant(t)
+      if not t:
+        err(f"{targ} is not a valid target.")
       # If they are not below half hp they are not healed.
       if t.hp <= t.max_hp//2:
         heal = vroll('1d6+'+str(bonus))
