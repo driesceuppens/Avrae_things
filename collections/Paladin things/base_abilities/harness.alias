@@ -1,0 +1,77 @@
+embed
+-title "<name> harnesses Divine Power!"
+-footer "TCoE 30+53 | {{ctx.prefix+ctx.alias}} | @Lathaon#6649"
+-color <color>
+-thumb <image>
+<drac2>
+pc = character()
+cbt = combat()
+
+# Check if the "-i" arg was used.
+# Just "i" will also work, and that is consistent with Avrae's base commands.
+ignore = argparse(&ARGS&).last('i', False, type_=bool)
+
+cc_fields = ''
+
+cleric_level = int(get('ClericLevel', 0))
+paladin_level = int(get('PaladinLevel', 0))
+
+error_message = f'-title "{name} wanted to Harness Divine Power..." -color FF0000 -desc "But'
+
+hdp_desc = 'You can expend a use of your Channel Divinity to fuel your spells. As a bonus action, you touch your holy symbol, utter a prayer, and regain one expended spell slot, the level of which can be no higher than half your proficiency bonus (rounded up).'
+
+if not ignore:
+	
+	# Need to be a cleric of 2nd level or higher or paladin of 3rd level or higher to have this feature.
+	if cleric_level < 2 and paladin_level < 3:
+		return f'{error_message} Harness Divine Power is only available to Clerics of 2nd level or higher, and Paladins of 3rd level or higher!"'
+	
+	# Channel Divinity: Set up counter, check number of uses left.
+	cd = 'Channel Divinity'
+	cd_uses = 1 + (cleric_level >= 6) + (cleric_level >= 18)
+	cd_cleric_desc = "At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with two such effects: Turn Undead and an effect determined by your domain. Some domains grant you additional effects as you advance in levels, as noted in the domain description.\n\nWhen you use your Channel Divinity, you choose which effect to create. You must then finish a short or long rest to use your Channel Divinity again.\n\nSome Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your cleric spell save DC.\n\nBeginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses."
+	cd_paladin_desc = "A paladin of 3rd level or higher gains two Channel Divinity options. Use `!classfeat <your oath here>: channel divinity` to view the description of your options."
+	
+	pc.create_cc_nx(cd, 0, cd_uses, 'short', 'bubble', desc=(cd_cleric_desc if cleric_level >= 2 else cd_paladin_desc))
+	channels_left = pc.get_cc(cd)
+	
+	# Harness Divine Power: Set up counter, check number of uses left.
+	hdp = 'Harness Divine Power'
+	
+	if cleric_level > paladin_level:
+		hdp_uses = 1 + (cleric_level >= 6) + (cleric_level >= 18)
+	else:
+		hdp_uses = 1 + (paladin_level >= 7) + (paladin_level >= 15)
+	
+	pc.create_cc_nx("Harness Divine Power", 0, hdp_uses, 'long', 'bubble', desc=hdp_desc)
+	harnesses_left = pc.get_cc(hdp)
+	
+	# Need to have Channel Divinity AND Harness Divine Power available to use this feature.
+	if harnesses_left <= 0:
+		cc_fields = [f'-f "{hdp}|{pc.cc_str(hdp)}"']
+		return f'{error_message} has no more uses of {hdp}!"'
+	elif channels_left <= 0:
+		cc_fields = [f'-f "{cd}|{pc.cc_str(cd)}"']
+		return f'{error_message} has no more uses of {cd}!"'
+
+# Okay, without further ado, let's restore that spell slot!
+# Go backwards from maximum to 1st level.
+for level in range(ceil(proficiencyBonus / 2), 0, -1):
+	if pc.spellbook.get_max_slots(level) > (slots := pc.spellbook.get_slots(level)):
+		pc.spellbook.set_slots(level, slots + 1)
+		cc_fields = f'-f "Spell Slots|{pc.spellbook.slots_str(level)} (+1)"'
+		break
+
+# Be nice if they used it accidentally and didn't actually NEED to recover any spell slots.
+if not ignore:
+	if not cc_fields:
+		return f'{error_message} has no expended spell slots to recover!"'
+	
+	pc.mod_cc(cd, -1)
+	pc.mod_cc(hdp, -1)
+	
+	cc_fields += f' -f "{hdp}|{pc.cc_str(hdp)} (-1)|inline" -f "{cd}|{pc.cc_str(cd)} (-1)|inline"'
+
+return f'-desc "{hdp_desc}"'
+</drac2>
+<cc_fields>
