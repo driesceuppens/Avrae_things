@@ -1,0 +1,56 @@
+embed <drac2>
+
+ch = character()
+c = combat()
+com = c and c.me
+base = f''' -color {color} -thumb {image} '''
+args = argparse(&ARGS&)
+targ = args.last('t')
+hit = ["None", True, False][args.adv(custom={"adv": "hit", "dis": "miss"})]
+b = args.last('b')
+ea = "ea" in &ARGS&
+rollstring = "3d20kh1" if ea else ["1d20", "2d20kh1", "2d20kl1"][args.adv()]
+
+# finding the stat to use.
+strMod = get("strengthMod", 0)
+dexMod = get("dexterityMod", 0)
+
+if int(strMod) >= int(dexMod):
+	bonus = int(strMod)
+else:
+	bonus = int(dexMod)
+
+# checking to see if they are proficient with improvised weapons.
+feats = get("feats", "")
+
+if "Tavern Brawler" in feats:
+	bonus += int(proficiencyBonus)
+
+bonus = str(bonus)
+# adding the bonus
+if b:
+	bonus += " + " + str(b)
+
+# Now we make the roll and add the stuff together.
+rol = vroll(str(rollstring) + " + " + str(bonus))
+
+# We check if we hit and change the hp if needed, or add the meta data if no target was given.
+if targ:
+	if combatant := c.get_combatant(targ):
+		if hit == "None":
+			hit = combatant.ac < rol.total
+		if hit:
+			combatant.damage("1")
+			rol = f''' -f "{str(rol)} Hit!\n**Damage**: 1" -footer "{combatant.name}: {combatant.hp_str()}" '''
+		else:
+			rol = f''' -f "{str(rol)} Miss!" '''
+		cname = combatant.name
+	base += f''' -title "{name} throws a snowball at {combatant.name}!" '''
+else:
+	rol = f''' -f "Meta|**Hit**: {rol}" '''
+	base += f''' -title "{name} throws a snowball at someone!" '''
+
+base += rol
+
+return base
+</drac2>
