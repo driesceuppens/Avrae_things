@@ -16,7 +16,7 @@ l = args.last('l')
 i = '-i' in &ARGS&
 inspire = 'glory' in &ARGS&
 cc = "Channel Divinity"
-sub = load_json(get("subclass","{'PaladinLevel':'Glory'}")).get("PaladinLevel","").lower() == "glory"
+sub = load_json(get("subclass",'{"PaladinLevel":"Glory"}')).get("PaladinLevel","").lower() == "glory"
 # if no level has been given makiing sure it's 1.
 if not l:
   l = 1
