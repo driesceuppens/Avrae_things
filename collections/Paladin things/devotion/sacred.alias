@@ -4,7 +4,7 @@ embed <drac2>
 ch = character()
 c = combat()
 com = c and c.me
-sub = load_json(get("subclass","{'PaladinLevel':'Devotion'}")).get("PaladinLevel","").lower()
+sub = load_json(get("subclass",'{"PaladinLevel":"Devotion"}')).get("PaladinLevel","").lower()
 lvl = int(get("PaladinLevel",0))
 cc = "Channel Divinity"
 i = '-i' in &ARGS&
