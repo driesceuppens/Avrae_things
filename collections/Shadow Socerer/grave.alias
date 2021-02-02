@@ -1,0 +1,41 @@
+embed <drac2>
+base = f' -color {color} -thumb {image} '''
+error = f' -color {color} -thumb {image} -title "{name} Failed to use Strength of the grave." '
+if len(&ARGS&) == 0:
+  return error + f' -desc "Error: pass the damage as an argument." '
+dam = int(&ARGS&[0])
+ch = character()
+cc = "Strength of the Grave"
+save = ch.saves.get("cha")
+if 'adv' in &ARGS&:
+  adv = True
+elif 'dis' in &ARGS&:
+  adv = False
+else:
+  adv = save.adv
+save = vroll(save.d20(adv))
+dc = int(5 + dam)
+their = get('their','their')
+if not get("SorcererLevel",0) > 0 and not ch.cc_exists(cc):
+  return error + f' -desc "You do not have this ability." '
+if ch.hp != 0:
+  base += f' -title "{name} is not dying." '
+  return base
+base += f''' -desc "Starting at 1st level, your existence in a twilight state between life and death makes you difficult to defeat. When damage reduces you to 0 hit points, you can make a Charisma saving throw (DC 5 + the damage taken). On a success, you instead drop to 1 hit point. You can\'t use this feature if you are reduced to 0 hit points by radiant damage or by a critical hit." -title "{name} uses {their} {cc}!" '''
+succes = save.total >= dc and ch.get_cc(cc) > 0
+if not '-i' in &ARGS&:
+  ch.mod_cc(cc, -1)
+  change = '(-1)'
+else:
+  change = ''
+if succes:
+  ch.modify_hp(1)
+  base += f' -f "{name}|**DC**: {dc}\n**CHA Save:** {save}; Succes!"  '
+elif dc >= save.total:
+  base += f' -f "{name}|**DC**: {dc}\n**CHA Save:** {save}; Failure!" '
+elif ch.get_cc(cc) == 0:
+  base += f' -f "You have no uses of {cc} remaining." -title "{name} Failed to use {cc}." -f "{cc}|{ch.cc_str(cc)}" '
+  return base
+base += f' -f "{cc}|{ch.cc_str(cc)} {change}" -title "{name} used Strength of the grave." -footer "{name}: {ch.hp_str()}" '
+return base
+</drac2>

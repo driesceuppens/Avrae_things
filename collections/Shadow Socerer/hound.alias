@@ -1,0 +1,43 @@
+<drac2>
+ch = character()
+c = combat()
+com = c and c.me
+cc = "Sorcery Points"
+newline = "\n"
+lvl = int(get("SorcererLevel", 0))
+sub = load_json(get('subclass', '{"SorcererLevel": "Shadow Magic"}')).get("SorcererLevel", "").lower()
+i = "-i" in &ARGS&
+if "roll" in &ARGS&:
+  roll_hp = "-rollhp"
+else:
+  roll_hp = ""
+v = (sub == "shadow magic" and lvl >=6) or i
+error_string = f"""embed -title "{name} fails to use the Shadow hound!" """
+return_string = ""
+ending_string = f""" -color {color} -thumb {image} """
+desc = get_gvar("597e1123-4169-4b15-b10f-4f96c16dcbc1")
+p = ctx.prefix
+if v:
+  if ch.cc_exists(cc):
+    if not ch.get_cc(cc):
+      return error_string + f""" -f "{name} Does not have enough {cc} left!" -f "{cc}|{ch.cc_str(cc)}" """
+  if com:
+    return_string += "multiline" + newline + f"""{p}init madd "Dire Wolf" -name "Shadow Hound" -thp {lvl//2} {roll_hp} """
+  return_string += newline + f"""{p}tembed -title "{name} summons their Hound of Ill omen!" {desc} -color {color} -thumb {image}"""
+  if not i and ch.cc_exists(cc):
+    ch.mod_cc(cc, -3)
+    return return_string + f""" -f "{cc}|{ch.cc_str(cc)} (-3)" """
+  if ch.cc_exists:
+    return_string += f""" -f "{cc}|{ch.cc_str(cc)}" """
+  return return_string
+
+if lvl == 0:
+  error_string += f""" -title "{name} is not a Sorcerer!" """
+
+elif sub != "shadow magic":
+  error_string += f""" -title "{name} is not a shadow magic Sorcerer!" """
+
+else:
+  error_string += f""" -title "{name} is not yet a level 6 Shadow Sorcerer!" """
+return error_string
+</drac2>

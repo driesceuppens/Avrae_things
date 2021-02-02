@@ -1,0 +1,22 @@
+embed <drac2>
+base = f''' -color {color} -thumb {image} -footer "Class feature| XGtE 51" '''
+c, cc, ch, sorc = combat(), "Sorcery Points", character(), int(character().levels.get("Sorcerer",0))
+v = ch.cc_exists(cc)
+if v and sorc > 17:
+  if ch.get_cc(cc) > 5 or '-i' in &ARGS&:
+    change = '(-6)'
+    if not '-i' in &ARGS&:
+      ch.mod_cc(cc, -6)
+      change = ''
+    base += f''' -title "{name} transforms into {get('their','their')} umbral form!" -desc "Starting at 18th level, you can spend 6 sorcery points as a bonus action to magically transform yourself into a shadowy form. In this form, you have resistance to all damage except force and radiant damage, and you can move through other creatures and objects as if they were difficult terrain. You take 5 force damage if you end your turn inside an object. \n\n You remain in this form for 1 minute. It ends early if you are incapacitated, if you die, or if you dismiss it as a bonus action." -f "{cc}|{ch.cc_str(cc)} {change}" '''
+    if c and c.me:
+      c.me.add_effect("Umbral Form",  "-resist  acid -resist bludgeoning -resist cold -resist fire -resist force -resist lightning -resist necrotic -resist piercing -resist poison -resist psychis -resist slashing -resist thunder", 10)
+      base += f''' -f "Umbral Form [9 rounds] (Resistance: acid, bludgeoning, cold, fire, force, lightning, necrotic, piercing, poison, psychis, slashing, thunder)" '''
+  else:
+    base += f''' -title "{name} tries to transform into {get('their','their')} umbral form." -desc "You do not have enouch Sorcery points let to use this ability." -f "{cc}|{ch.cc_str(cc)}" '''
+elif sorc < 18:
+  base += f''' -title "{name} is not high level enough to use this ability" -desc "You need to be at least level 18 to use the umbral form ability." '''
+else:
+  base += f''' -title "{name} is not a sorcerer." -desc "You need to be a level 18 shadow sorcerer to use this ability." '''
+return base
+</drac2>

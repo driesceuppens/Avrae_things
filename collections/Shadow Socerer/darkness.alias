@@ -1,0 +1,21 @@
+embed <drac2>
+base = f' -color {color} -thumb {image} -desc "Starting at 1st level, you have darkvision with a range of 120 feet. \n \n When you reach 3rd level in this class, you learn the darkness spell, which doesn\'t count against your number of sorcerer spells known. In addition, you can cast it by spending 2 sorcery points or by expending a spell slot. If you cast it with sorcery points, you can see through the darkness created by the spell." -f "Darkness|Magical darkness spreads from a point you choose within range to fill a 15-foot-radius sphere for the duration. The darkness spreads around corners. A creature with darkvision can\'t see through this darkness, and nonmagical light can\'t illuminate it. \n \n If the point you choose is on an object you are holding or one that isn\'t being worn or carried, the darkness emanates from the object and moves with it. Completely covering the source of the darkness with an opaque object, such as a bowl or a helm, blocks the darkness. \n \n If any of this spell\'s area overlaps with an area of light created by a spell of 2nd level or lower, the spell that created the light is dispelled." '
+c = combat()
+cc = "Sorcery Points"
+if character().cc_exists(cc) and character().get_cc(cc) > 1:
+  if not '-i' in &ARGS&:
+    character().mod_cc(cc, -2)
+    change = "(-2)"
+  else:
+    change = " "
+  base += f' -title "{name} casts darkness using sorcery points." '
+  base += f' -f "{cc}|{character().cc_str(cc)} {change}" '
+elif character().get_cc(cc) <= 1:
+  err("You do not have enough sorcery points left to cast darnkess.")
+else:
+  err("You do not have this ability")
+if combat() and combat().me:
+  combat().me.add_effect("Darkness", "", 10, True)
+  base += f' -f "{name}|Concentrating on darkness" '
+return base
+</drac2>
