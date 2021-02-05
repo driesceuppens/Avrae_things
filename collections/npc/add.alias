@@ -16,9 +16,9 @@ if str(c) in u.keys():
   return f''' -title "You already have an npc in this channel, use another channel for this npc or delete it." -desc "You can't have two ncp's set to the same channel." -f "Your npc in this channel is|{u[str(c)]["name"]}" -image {u[str(c)]["url"]}'''
 
 # creating an new NPC
-newNPC = {"name": name, "url": url}
+newNPC = {"name": name.lower(), "url": url}
 u[c] = newNPC
 set_uvar("NPCS", dump_json(u))
-return f'-title "Your new NPC is {name}" -image {url} -color {color}'
+return f'-title "Your new NPC is {name.capitalize()}" -image {url} -color {color}'
 
 </drac2>

@@ -7,7 +7,7 @@ if not uvar_exists('NPCS'):
     err('Add NPSs to your NPC roster before showing them off.')
 
 # getting the name of the NPC to show.
-name = &ARGS&[0]
+name = &ARGS&[0].lower()
 
 # Checking if a name is given.
 if not name:
@@ -27,11 +27,11 @@ for i in range(len(npc)):
 npc[-1] = npc[-1][:-1]
 
 # making sure the name is an NPC the user has and grabbing the url for the name.
-if name in npc:
+if name.lower() in npc:
   for i in range (len(npc)):
     if npc[i] == name:
-      return f''' -title "{name.title()}" -image {npc[i+1]} '''
+      return f''' -title "{name.capitalize()}" -image {npc[i+1]} '''
 
 # To tell if there is no NPC.
-return f''' -title "No NPCs with the name {name} exists." '''
+return f''' -title "No NPCs with the name {name.capitalize()} exists." '''
 </drac2>
