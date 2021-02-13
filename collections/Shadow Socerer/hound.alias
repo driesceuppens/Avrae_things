@@ -22,10 +22,8 @@ if v:
     if not ch.get_cc(cc):
       return error_string + f""" -f "{name} Does not have enough {cc} left!" -f "{cc}|{ch.cc_str(cc)}" """
   if com:
-    return_string += "multiline" + newline + f"""{p}init madd "Dire Wolf" -name "Shadow Hound" -thp {lvl//2} {roll_hp} """ + newline
-    return_string += f"""{p}tembed -title "{name} summons their Hound of Ill omen!" {desc} -color {color} -thumb {image}"""
-  else:
-    return_string += f"""tembed -title "{name} summons their Hound of Ill omen!" {desc} -color {color} -thumb {image}"""
+    return_string += "multiline" + newline + f"""{p}init madd "Dire Wolf" -name "Shadow Hound" -thp {lvl//2} {roll_hp} """ + newline + p
+  return_string += f"""tembed -title "{name} summons their Hound of Ill omen!" {desc} -color {color} -thumb {image}"""
   if not i and ch.cc_exists(cc):
     ch.mod_cc(cc, -3)
     return return_string + f""" -f "{cc}|{ch.cc_str(cc)} (-3)" """
