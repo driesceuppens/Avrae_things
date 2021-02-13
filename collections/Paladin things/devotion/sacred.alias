@@ -24,8 +24,8 @@ if v:
   base += f''' -title "{name} uses {their} {cc}!" -desc "As an action, you can imbue one weapon that you are holding with positive energy, using your Channel Divinity. For 1 minute, you add your Charisma modifier to attack rolls made with that weapon (with a minimum bonus of +1). The weapon also emits bright light in a 20-foot radius and dim light 20 feet beyond that. If the weapon is not already magical, it becomes magical for the duration." '''
   if com:
     # Adding an effect the snippet can look for to add the damage
-    c.me.add_effect("Sacret weapon",'',10,desc="You can add your charismamodifier to attackroles for one minute.")
-  base += f''' -f "{name}|**Effect**: Sacret Weapon[10 rounds]\n- You can add your charismamodifier to your attack roles." '''
+    c.me.add_effect("Sacred weapon",'',10,desc="You can add your charisma modifier to attack roles for one minute.")
+  base += f''' -f "{name}|**Effect**: Sacred Weapon[10 rounds]\n- You can add your charisma modifier to your attack roles." '''
   if not i:
     if ch.cc_exists(cc):
       ch.mod_cc(cc,-1)
