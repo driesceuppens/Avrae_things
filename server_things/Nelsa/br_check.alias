@@ -1,0 +1,39 @@
+!alias br_check embed <drac2>
+args = argparse(&ARGS&)
+rollstring = ["1d20", "2d20kh1", "2d20kl1"][args.adv()]
+c = combat()
+dc = args.last("dc")
+target = args.last("t")
+change = args.last("br")
+if target:
+  target = c.get_combatant(target)
+if not target:
+  target = c.current
+old_note = target.note
+new_note = old_note.split(" | ")
+note_dict = {thing.split(":")[0]:thing.split(":")[1] for thing in new_note}
+br = note_dict["Br"] if "Br" in note_dict.keys() else 0
+rollstring += " + " + str(br)
+check = vroll(f"{rollstring}")
+base = f""" -title "{target.name} makes a Battle rating check!" -color {color} """
+if dc:
+  base += f""" -desc "**DC**: {dc}" -f "{check} {"succes!" if dc < check.total else "Failure!"}" """
+else:
+  base += f""" -desc "{check}" """
+if not change:
+  return base
+# okay, how to reconstruct the note, let's first change the br
+if change[0].isdigit():
+  note_dict["Br"] = " " + str(change)
+else:
+  if change[0] == "+":
+    note_dict["Br"] = " " + str(int(br) + int(change[1:]))
+  else:
+    note_dict["Br"] = " " + str(int(br) - int(change[1:]))
+note_change = ""
+for i in note_dict:
+  note_change += str(i) + ":" + str(note_dict[i]) + " | "
+note_change = note_change[:-3]
+target.set_note(note_change)
+return f""" -color {color} -title "{target.name}'{"s" if not target.name[-1] == "s" else ""} BR has been changed." """
+</drac2>

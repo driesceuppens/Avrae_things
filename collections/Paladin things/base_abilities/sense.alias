@@ -1,23 +1,27 @@
-embed <drac2>
+<drac2>
 
 # variables
 ch,cc,lvl,i = character(),"Divine Sense", get("PaladinLevel",0),'-i' in &ARGS&
 v = ch.cc_exists(cc) or i
 if ch.cc_exists(cc):
-  v = v and ch.get_cc(cc)>0
+  	v = v and ch.get_cc(cc)>0
+
+if len(&ARGS&) > 0 and &ARGS&[0] in "help?":
+	return f"""help {ctx.alias} -here"""
+
 if not v:
-  return f''' -thumb {image} -color {color} -title "{name}  is not a paladin!" '''
+  	return f''' -thumb {image} -color {color} -title "{name}  is not a paladin!" '''
 they,them,their,theirs = get('they','they'), get('them','them'), get('their','their'), get('theirs','theirs')
-base = f''' -thumb {image} -color {color} '''
+base = f'''embed -thumb {image} -color {color} '''
 change = ''
 if v:
-  base += f''' -title "{name} uses {their} {cc}!" -desc "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity (the vampire Count Strahd von Zarovich, for instance). Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell." '''
+  	base += f''' -title "{name} uses {their} {cc}!" -desc "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity (the vampire Count Strahd von Zarovich, for instance). Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell." '''
 else:
-  base += f''' -title "{name} has no uses of {their} {cc} left." '''
+ 	base += f''' -title "{name} has no uses of {their} {cc} left." '''
 if not i and ch.cc_exists(cc) and ch.get_cc(cc)>0:
-  ch.mod_cc(cc,-1)
-  change = '(-1)'
+ 	ch.mod_cc(cc,-1)
+ 	change = '(-1)'
 if ch.cc_exists(cc):
-  base += f''' -f "{cc}|{ch.cc_str(cc)} {change}" '''
+	base += f''' -f "{cc}|{ch.cc_str(cc)} {change}" '''
 return base
 </drac2>

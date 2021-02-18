@@ -1,4 +1,4 @@
-embed <drac2>
+<drac2>
 
 # Getting the variables.
 ch,c,com,args,i,lvl,sub,cc = character(),combat(), combat() and combat().me, argparse(&ARGS&),'-i' in &ARGS&, int(get("PaladinLevel",0)),load_json(get('subclass','{"PaladinLevel": "Ancients"}')).get('PaladinLevel','').lower(),"Channel Divinity"
@@ -26,7 +26,11 @@ their = get('their','their')
 v = (lvl>2 and sub == 'ancients') or i
 
 # args for the embed.
-base = f''' -thumb {image} -color {color} '''
+base = f'''embed -thumb {image} -color {color} '''
+
+if len(&ARGS&) and &ARGS&[0] in "help?":
+  return f"""help {ctx.alias} -here"""
+
 
 # Checking if the character has the counter to display.
 if ch.cc_exists(cc):

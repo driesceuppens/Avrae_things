@@ -1,4 +1,4 @@
-!alias sentinel embed <drac2>
+<drac2>
 
 # variables
 ch = character()
@@ -12,7 +12,10 @@ hp = ch.hp
 v = (lvl > 14 and sub == 'ancients') or i
 
 # the return.
-base = f''' -thumb {image} -color {color} '''
+base = f'''embed -thumb {image} -color {color} '''
+
+if len(&ARGS&) and &ARGS&[0] in "help?":
+  return f"""help {ctx.alias} -here"""
 
 # Checking the variables
 if v:

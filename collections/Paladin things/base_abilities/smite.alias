@@ -1,4 +1,4 @@
-embed <drac2>
+<drac2>
 
 # First of all Huge props to @kortar#9227 for allowing me to adapts and use his `!smite` alias. This is that one slightly changed and put into drac2. That's all.
 
@@ -28,7 +28,10 @@ lvl = int(get("PaladinLevel",0))
 spell = ch.spellbook
 their = get("their","their")
 v = lvl > 1 or i
-base = f''' -thumb {image} -color {color} '''
+base = f'''embed -thumb {image} -color {color} '''
+if len(&ARGS&) > 0 and &ARGS&[0] in "help?":
+  return f"""help {ctx.alias} -here"""
+
 # Checking if there are slots left to smite with.
 if v and not i:
   if not spell.get_slots(l):
@@ -91,6 +94,7 @@ if v:
   if spell.get_slots(l):
     base + f''' -f "Spell Slots|{spell.slots_str(l)}" '''
   return base
+
 if lvl == 0:
   base += f''' -title "{name} is not a paladin!" '''
 else:

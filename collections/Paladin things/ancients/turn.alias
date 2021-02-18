@@ -1,4 +1,4 @@
-embed <drac2>
+<drac2>
 ch = character()
 c = combat()
 com = c and c.me
@@ -20,7 +20,12 @@ lvl = int(get("PaladinLevel",0))
 how = ["not",True,False][args.adv(custom={"adv":"pass","dis":"fail"})]
 their = get('their','their')
 v = (lvl > 2 and sub == 'ancients') or i
-base = f''' -thumb {image} -color {color}'''
+base = f'''embed -thumb {image} -color {color}'''
+
+if len(&ARGS&) and &ARGS&[0] in "help?":
+  return f"""help {ctx.alias} -here"""
+
+
 if v and targs and com:
   if ch.cc_exists(cc) and not i:
     if not ch.get_cc(cc):
