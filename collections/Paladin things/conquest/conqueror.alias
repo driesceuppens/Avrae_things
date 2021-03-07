@@ -1,4 +1,4 @@
-embed <drac2>
+<drac2>
 ch = character()
 c = combat()
 com = combat() and combat().me
@@ -8,7 +8,11 @@ cc = "Invincible Conqueror"
 i = '-i' in &ARGS&
 their = get('their','their')
 v = (lvl == 20 and sub == 'conquest') or i
-base = f''' -thumb {image} -color {color} '''
+base = f'''embed -thumb {image} -color {color}'''
+
+if len(&ARGS&) and &ARGS&[0] in "help?":
+  return f"""help {ctx.alias} -here"""
+
 if v:
   if not i:
     if not ch.get_cc(cc):

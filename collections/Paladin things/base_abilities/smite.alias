@@ -60,7 +60,7 @@ if v:
     # dealing the damage
     dam = targ.damage(damstr,crit)
     # Adding the dealt damage
-    base += f''' -f "{targ.name}|**Damage**: {dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
+    base += f''' -f "{targ.name}|{dam.damage}" -footer "{targ.name}: {targ.hp_str()}" '''
   # IF there is no combat or no target given showing the damage roll.
   else:
     if crit:
