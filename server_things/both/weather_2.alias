@@ -1,0 +1,179 @@
+multiline
+<drac2>
+#basic setup
+debug = []
+# the id's of all bot helpers and Bean
+bot_helpers = ["308195919956803584", "389824922991460352", "237139531197841410", "315267543537549312"]
+testversion = False
+args = &ARGS&
+embed_return = ["embed", "-color ffffff"]
+newline = "\n"
+server = ctx.guild.id
+# The info over elke server, meer nodig tijdens testen dan iets anders maar is handing als er iets misloops met the svar.(Stiekem zit het id van mijn server(Dice) er ook in shhhht)
+server_info = {"735145203987644591": {"name": "Nelsa Themar", "biome": "mountain"}, "753736539149959309" :{"name": "Crimson Port", "biome": "coastal"}, "428524081118183434": {"name": "The empty Castle", "biome": "mountain"}, "805458834377932820": {"name": "Astrian Meeting", "biome": "mountain"}} # should not be needed but just to be sure I guess.
+server_info = server_info.get(str(server), {})
+# Getting the svar loaded in as a json, with a backup of the essensials if needed.
+current_svar = load_json(get_svar("serverData", '{"date": "1", "gvar": "7d486b79-bdd9-406f-a61d-ee135663ce94"}'))
+# Setting the values of the svar for later use
+if current_svar.get("biome"):
+	pass
+elif server_info.get("biome"):
+	current_svar["biome"] = server_info.get("biome")
+else:
+	current_svar["biome"] = "mountain"
+
+if current_svar.get("name"):
+	pass
+elif server_info.get("name"):
+	current_svar["name"] = server_info.get("name")
+else:
+	current_svar["name"] = ctx.guild.name
+
+# idk why I sometimes use get and sometimes [] but euuh
+gvar = current_svar["gvar"]
+
+#getting the date fixed up
+# For if people have the old uvar from the old alias. Lets hope it's always okay I guess?
+if uvar_exists("Date"):
+	date = int(get("Date"))
+	if get_svar("serverData"):
+		delete_uvar("Date")
+else:
+	date = int(current_svar.get("date", "1"))
+
+if len(args) > 2 and args[2].isdigit():
+	date = int(args[2])
+debug.append(date)
+
+# updating the svar to the new date
+current_svar["date"] = str(date + 1)
+# Getting the gvar loaded in
+date_json = load_json(get_gvar(gvar))
+# To allow for easier user input I swap the user input into this
+season_swap_a = {'❄ Winter': 'winter', '🌱 Spring': 'spring', '☀️ Summer': 'summer', '🍂 Fall': 'fall'}
+# getting the current season
+season = date_json.get("seasons")
+setup = {i["name"]: (i["start"], i["end"]) for i in season}
+for j in setup:
+	if setup[j][0] <= int(date) and setup[j][1] >= int(date):
+		current_season = season_swap_a[j]
+		break
+# fuzzy matching for the args
+# current_season = current_season if len(args) < 2 else args[1]
+if len(args) > 1 and args[1] != "svar":
+	for i in season_swap_a.values():
+		if args[1] in i:
+			current_season = i
+			break
+debug.append(current_season)
+# getting the day of the month
+day_month = date % 30
+# getting the name of the month
+month = date_json["months"][date // 30]["name"]
+# moonphase things
+moon_name = date_json.get("moon")
+moon_cycle = date_json.get("moonCycle")
+index = int(str(round(date-1/moon_cycle, 0))[:-2])%len(moon_name)
+moon_name = moon_name[index]
+# weather
+
+
+# The weathers with as the values a tuple of the temps in-between they can happen
+weather_weights = {"❄ Snow": (-31, 36), "🌨 Blizzard": (-31, 36), "☀ Clear": (-31, 105), "🌤 Mostly Clear": (-31, 105), "⛅ Partly Cloudy": (-31, 105), "🌥 Mostly Cloudy": (-31, 105), "☁ Overcast": (-31, 105), "🌦 Showers": (34, 90), "🌧 Downpour": (34, 90), "⛈ Storm": (34, 90)}
+
+# A dict with all the biomes as keys and as values a dict of the seasons as keys and the min and max temperatures for each.
+biomes = {"acrtic": {"winter": (-31, -19), "spring": (5, 17), "summer": (32, 44), "fall": (12, 24)}, "coastal": {"winter": (28, 48), "spring": (42, 62), "summer": (58, 78), "fall": (45, 65)}, "desert": {"winter": (43, 73), "spring": (63, 93), "summer": (75, 105), "fall": (65, 95)}, "forest": {"winter": (10, 40), "spring": (30, 60), "summer": (51, 81), "fall": (35, 65)}, "grassland": {"winter": (7, 31), "spring": (38, 62), "summer": (63, 87), "fall": (41, 65)}, "hills": {"winter": (20, 50), "spring": (34, 64), "summer": (50, 80), "fall": (40, 70)}, "mountain": {"winter": (0, 30), "spring": (20, 50), "summer": (45, 75), "fall": (25, 55)}, "swamp": {"winter": (38, 68), "spring": (54, 84), "summer": (67, 97), "fall": (56, 86)}}
+
+terain = current_svar.get("biome")
+# fuzzy matching for inputs
+if len(args) and args[0] != "svar":
+	for i in biomes:
+		if args[0] in i:
+			terain = i
+			break
+
+# Setting the range for the temperatures
+biome = biomes[terain][current_season]
+# rolling the temperature
+temperature = randint(int(biome[1]) - int(biome[0])) + int(biome[0])
+debug.append(f"The temperature is : {temperature}")
+# made for future implementation I think
+weather_vars = {"❄ Snow": "1d6", "🌨 Blizzard": (1, 9), "☀ Clear": "1d4", "🌤 Mostly Clear": (-31, 105), "⛅ Partly Cloudy": (-31, 105), "🌥 Mostly Cloudy": (-31, 105), "☁ Overcast": (-31, 105), "🌦 Showers": (1, 9), "🌧 Downpour": (1, 9), "⛈ Storm": (1, 9)}
+# now to construct the list of all possible weathers
+possible_weather = []
+# perhaps I should remove all this debug info but I don't feel like it
+temp_weathers = {}
+while not len(possible_weather):
+	for weather in weather_weights:
+		if (temp := weather_weights[weather])[0] <= temperature and temp[1] >= temperature:
+			difference = [0, 0]
+			# this was hard as hell and all of it because asb() is not a thing please Zhu
+			# I am aware that this could have been handled clearer but f u
+			if temperature < 0:
+				difference[1] = temp[1] + temperature
+				difference[0] = -1*(temp[0] - temperature)
+			else:
+				difference[1] = temp[1] - temperature
+				if temp[0] < 0:
+					if -1*temp[0] > temperature:
+						difference[0] = -1*temp[0] - temperature
+					else:
+						difference[0] = temperature + temp[0]
+				else:
+					difference[0] = temp[0] - temperature
+			if difference[0] < 0:
+				difference[0] = difference[0] * -1
+			debug.append(weather)
+			debug.append(difference)
+			temp_weathers[weather] = min(difference[0], difference[1])
+			# rolling for how many times each weather is added to the list so we get more :sparkles: randomness :sparkles:
+			loops = roll(f"2d{(max(min(difference[0], difference[1]), 1))//2}")
+			debug.append(loops)
+			for k in range(loops):
+				possible_weather.append(weather)
+
+debug.append(f"Len of possible_weather: {len(possible_weather)}")
+# wind directions
+wind_direction = ['`↑` North', '`↗` Northeast', '`→` East', '`↘` Southeast', '`↓` South', '`↙` Southwest', '`←` West', '`↖` Northwest'][roll("1d8") - 1]
+# now possible weathers is a list of all the weathers that can happen. Now to make the dict of close weathers
+# a dict with as keys all the weathers and as values a list of all the weathers similar to it, so we can update the possible weathers list as we go
+adjacent_weathers = {"❄ Snow": ["❄ Snow", "🌨 Blizzard", "🌥 Mostly Cloudy", "⛅ Partly Cloudy", "🌤 Mostly Clear", "☁ Overcast"],"🌨 Blizzard": ["🌨 Blizzard", "❄ Snow"],"☀ Clear": ["☀ Clear", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow"],"🌤 Mostly Clear": ["☀ Clear", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow", "⛈ Storm"],"⛅ Partly Cloudy": ["☀ Clear", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow", "⛈ Storm"],"🌥 Mostly Cloudy": ["☀ Clear", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow", "⛈ Storm"],"☁ Overcast": ["☀ Clear", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow", "⛈ Storm"],"🌦 Showers": ["☀ Clear", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow", "⛈ Storm"],"🌧 Downpour": ["☀ Clear", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow", "⛈ Storm"],"⛈ Storm": ["⛈ Storm", "🌤 Mostly Clear", "⛅ Partly Cloudy", "🌥 Mostly Cloudy", "☁ Overcast", "🌦 Showers", "🌧 Downpour", "❄ Snow", "⛈ Storm"]}
+# list where we will store the final 4 weathers for each part of the day
+weather_list = []
+# picking a random weather from the list of possible ones, keep in mind that the same weather can be in here multiple times
+weather_list.append(possible_weather[randint(len(possible_weather))])
+# updating the list of possible weathers into a new one, keeping all the ones that we're possible previously and in the temp
+new_possible_weather = [w for w in possible_weather if w in adjacent_weathers[weather_list[0]]]
+
+weather_list.append(new_possible_weather[randint(len(new_possible_weather))])
+new_possible_weather = [w for w in new_possible_weather if w in adjacent_weathers[weather_list[1]]]
+
+weather_list.append(new_possible_weather[randint(len(new_possible_weather))])
+new_possible_weather = [w for w in new_possible_weather if w in adjacent_weathers[weather_list[2]]]
+
+weather_list.append(new_possible_weather[randint(len(new_possible_weather))])
+new_possible_weather = [w for w in new_possible_weather if w in adjacent_weathers[weather_list[3]]]
+debug.append(weather_list)
+# adding the rolled weathers list into the svar so we can grab it for the `!tz` alias
+current_svar["weathers"] = weather_list
+# since I don't use all the cool names in my code because headaches I need to swap it at the end for the embed to look cool.
+change_dict = {"winter": "❄ Winter", "spring": "🌱 Spring", "summer": "☀️ Summer", "fall": "🍂 Fall"}
+current_season = change_dict[current_season]
+temp_low = temperature - roll("1d6")
+temp_high = temperature + roll("1d6")
+# start making the embed
+title = f""" -title "Today's weather in {current_svar["name"]} {terain} area!" """
+f = " -f "
+fields = [f"""{f}"0000-0600 (12a-6a Server Time) Weather|{weather_list[0]}" """, f"""{f}"0600-1200 (6a-12p Server Time) Weather|{weather_list[1]}" """, f"""{f}"1200-1800 (12p-6p Server Time) Weather|{weather_list[2]}" """, f"""{f}"1800-0000 (6p-12a Server Time) Weather|{weather_list[3]}" """, f"""{f}"wind|{wind_direction}" """, f"""{f}"{day_month}th day of {month}|{current_season}: {moon_name}" """, f"""{f}"temperature|**High: **{temp_high}°F, {round((temp_high-32) * 5/9, 2)}°C and **Low: **{temp_low}°F, {round((temp_low-32) * 5/9, 2)}°C" """]
+fields.append(title)
+desc = f""" -desc "{debug}" """ if testversion else ""
+fiends.append(desc)
+# returning the embed things.
+return f"""{ctx.prefix}{" ".join(embed_return + fields)}"""
+</drac2>
+<drac2>
+# this should probably be done in drac1 but euuh.
+result = f"""{ctx.prefix}svar serverData {dump_json(current_svar)}""" if str(ctx.author.id) in bot_helpers and not testversion else f""
+if not "svar" in args:
+	return result
+</drac2>

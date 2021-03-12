@@ -1,0 +1,8 @@
+embed <drac2>
+embed_return = ["embed", "-color ffffff"]
+n = "\n"
+
+biomes = ['acrtic', 'coastal', 'desert', 'forest', 'grassland', 'hills', 'mountain', 'swamp']
+embed_return.append(f""" -title "These are all the possible biomes!" """)
+return " ".join(embed_return) + f""" -desc "{n.join(biomes)}" """
+</drac2>

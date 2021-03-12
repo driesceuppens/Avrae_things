@@ -1,5 +1,5 @@
 embed {{p = ctx.prefix + ctx.alias}}
--title "How to use all of the abilities of oath of the watchers!"
+-title "How to use all of the abilities of oath of vengeance!"
 -desc "There are 3 sub commands to `{{p}}`. abjure, enmity and angel. These activate different abilities for the subclass."
 -f "abjure|To use the Abjure Enemy channel divinity.
 `{{p}} abjure [-t target(|args)] [-i] [-dc dc] [adv/dis] [pass/fail]`

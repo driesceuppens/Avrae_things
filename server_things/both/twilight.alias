@@ -1,0 +1,45 @@
+<drac2>
+ch = character()
+cc = "Channel Divinity"
+effectName = "Twilight things"
+c = combat()
+args = argparse(&ARGS&)
+com = c and c.me
+target = args.last("t", "")
+effect = args.last("effect", "")
+base = f"""embed -color {color} -thumb {image}"""
+lvl = int(get("ClericLevel", 0))
+subclass = load_json(get("subclass", "{}")).get("ClericLevel", "").lower() == "twilight"
+i = "-i" in &ARGS&
+v = (lvl > 1 and subclass) or i
+heal = vroll(f"1d6+{lvl}")
+if not v:
+	return base + f""" -title "You are not a level 2 twilight cleric." """
+
+if not i and ch.cc_exists(cc):
+	if not ch.get_cc(cc):
+		return base + f""" -title "{name} is out of uses for {cc}" -f "{cc}|{ch.cc_str(cc)}" """
+
+if not com:
+	return base + f""" -title "please use this alias in combat" """
+
+
+if sEffect := com.get_effect(effectName):
+	if combatant := c.get_combatant(target):
+		set = combatant.set_temp_hp(heal.total) if combatant.temp_hp() < heal.total else False
+		base += f""" -f "{combatant.name}|{heal} THP!" """ if set else ""
+		combatant.remove_effect(effect) if combatant.get_effect(effect) else ""
+		base += f""" -f "{combatant.name}|removed effect {combatant.get_effect(effect).name if combatant.get_effect(effect) else effect}" """ if effect else ""
+	else:
+		base += f""" -f "{target}|{heal} THP!" -f "{target}|removed {effect}." """
+else:
+	base += f""" -desc "DESC" -title "{name} uses {get("their", "their")} {cc}!" """
+	com.add_effect(effectName, "", 10, desc="You grant it temporary hit points equal to 1d6 plus your cleric level.\n- You end one effect on it causing it to be charmed or frightened.")
+	base += f""" -f "{name}|Added the {effectName}." """
+
+if not i:
+	ch.mod_cc(cc, -1)
+if ch.cc_exists(cc):
+	base += f""" -f "{cc}|{ch.cc_str(cc)} {"(-1)" if not i else""}" """
+return base
+</drac2>
