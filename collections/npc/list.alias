@@ -1,2 +1,2 @@
 echo _ _
-{{npcs = load_json(get('NPCS', '{}'))}}{{ '\n' + '\n'.join( f'{j["name"].capitalize()} in <#{i}>' for i, j in npcs.items()) }}
+{{npcs = load_json(get('NPCS', '{}'))}}{{ '\n' + '\n'.join( f'{j["name"].title()} in <#{i}>' for i, j in npcs.items()) }}
