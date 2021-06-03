@@ -12,5 +12,5 @@ if str(c) not in u.keys():
     err('No NPC set in this channel')
     
 # Returning the name and url of the NPC to display in an embed.
-return f'-color {color} -title "' + u[str(c)]["name"].capitalize() + f'" -image ' + u[str(c)]["url"]
+return f'-color {color} -title "' + u[str(c)]["name"].title() + f'" -image ' + u[str(c)]["url"]
 </drac2>
