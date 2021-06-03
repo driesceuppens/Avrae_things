@@ -35,3 +35,4 @@ if name.lower() in npc:
 # To tell if there is no NPC.
 return f''' -title "No NPCs with the name {name.capitalize()} exists." '''
 </drac2>
+-color <color>
