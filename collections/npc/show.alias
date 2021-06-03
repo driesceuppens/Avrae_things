@@ -30,9 +30,9 @@ npc[-1] = npc[-1][:-1]
 if name.lower() in npc:
   for i in range (len(npc)):
     if npc[i] == name:
-      return f''' -title "{name.capitalize()}" -image {npc[i+1]} '''
+      return f''' -title "{name.title()}" -image {npc[i+1]} '''
 
 # To tell if there is no NPC.
-return f''' -title "No NPCs with the name {name.capitalize()} exists." '''
+return f''' -title "No NPCs with the name {name.title()} exists." '''
 </drac2>
 -color <color>
