@@ -17,3 +17,5 @@
 * Allow for plain effects
 * allow for ieffects
 * Still need to add support for the races but that will come when the update rolls out or after it
+
+I am aware that currently the lay out of the aliases doesn't make much sense, and well. I will change that soon:tm: but currently I am still very busy with the first stages of production so that move will have to wait until I have a better idea of how I will structure everything in the end.
