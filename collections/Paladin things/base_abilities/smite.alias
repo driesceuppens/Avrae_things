@@ -12,6 +12,7 @@ targ = args.last('t')
 crit = [False,True][args.adv(custom={'adv':'crit'})]
 # checking for the extra dice, using both at the same time will result in none since creatures can't both be undead and fiends, don't cheat.
 extra = [False, True, True][args.adv(custom={'adv':'fiend','dis':'undead'})]
+ignore_race = args.last('ignore', default=False)
 l = args.last('l')
 i = '-i' in &ARGS&
 inspire = 'glory' in &ARGS&
@@ -49,7 +50,6 @@ if v:
   if extra:
     damstr += '+1d8'
   # Adding the damage type
-  damstr += "[radiant]"
   # dealing the damage if there is combat
   if com and targ:
     # Making a combatant from the target
@@ -57,6 +57,10 @@ if v:
     targ = c.get_combatant(targ)
     if not targ:
       err(f"{tar} is not a valid target.")
+    targ_race = any(bad_type in targ.creature_type.lower() for bad_type in ['fiend', 'undead'])
+    if targ_race and not (ignore_race or extra):
+      damstr += '+1d8'
+    damstr += '[radiant]'
     # dealing the damage
     dam = targ.damage(damstr,crit)
     # Adding the dealt damage
