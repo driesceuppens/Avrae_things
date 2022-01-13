@@ -2,7 +2,7 @@ embed <drac2>
 
 # getting all the relevant variables
 c = ctx.channel.id
-u = load_json(get('NPCS'))
+u = load_json(get('NPCS', '{}'))
 args = argparse(&ARGS&)
 name = args.last('name')
 url = args.last('url')
