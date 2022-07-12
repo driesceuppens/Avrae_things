@@ -1,0 +1,2 @@
+{{L=int(get('FighterLevel',0))}}
+{{f'-d1 1d{6+2*((L>9)+(L>16))} -f "Giant Might |  Once on each of your turns, one of your attacks with a weapon or an unarmed strike can deal an extra **1d{4+2*((L>9)+(L>16))}** damage to a target on a hit."' if L>2 and 'Rune Knight' in get('subclass','') else f'-f "Liar | You are not a Rune Knight!"'}}

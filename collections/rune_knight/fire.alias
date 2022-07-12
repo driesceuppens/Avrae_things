@@ -1,0 +1,18 @@
+embed {{F,a,i,c,H,cc=int(get('FighterLevel',0)), argparse(&ARGS&),'-i' in &ARGS&,combat(),f'!giant fire [-i] [crit] [-t target]',"Fire Rune"}} 
+{{v,T,DC=cc_exists(cc) and get_cc(cc)>0,a.last("t"),8+proficiencyBonus+constitutionMod}}{{cr, T= 2 if 'crit' in a else 1, c.get_combatant(T) if c and T else None}}
+{{s=T.save("str") if c and T else None}}
+{{C=cc_exists(cc)}}
+-title "<name> {{"invokes" if i or v else "tries to invoke"}} the fire rune on {{T.name if T else "the Target"}}!"
+-desc "{{"When you hit a creature with an attack using a weapon, you can invoke the rune to summon fiery shackles: the target takes an extra 2d6 fire damage (4d6 on a critical hit), and it must succeed on a Strength saving throw or be restrained for 1 minute. While restrained by the shackles, the target takes 2d6 fire damage at the start of each of its turns. The target can repeat the saving throw at the end of each of its turns, banishing the shackles on a success." if F>2 and 'Rune Knight' in get('subclass','') else err(f'You are not a Rune Knight! \nIf you are, set up your level using `!level fighter rune`')}}"
+{{sroll ='2d6'+'[fire]'}} {{droll = T.damage(sroll, crit = cr == 2).damage if T else vroll(sroll,cr)}}
+{{'' if i else mod_cc(cc,-1) if v else err(f'No {cc}s remaining.\n**{H}** \n\nIf you have this rune, but not the custom counter use `!cc create "Fire Rune" -min 0 -max 1+(FighterLevel/15) -reset short -type bubble.`')}} {{r= "Restrained"}}
+{{saved=s.total>=DC if s else None}} 
+{{o=(f'-f "DC:{DC}\n{T.name}|STR Save: {s}; Failure! Effect: {r}"' if not saved else f'-f "DC:{DC}\n{T.name}|STR Save: {s}; Success!"') if s else None}}
+{{f'-f "{T.name} | {droll}"' if T else f'-f " "Meta" | Damage{" (CRIT!)" if cr == 2 else ""}: {droll}"'}}
+{{f'-f "Effect| Not in initiative/No Target"' if not o else o}} 
+{{(c.me.add_effect('Firey Shackles', f'-attack "|2d6[fire]|"',desc= "Fire shackles restrain the target.") if not saved else "") if s and c and c.me else None}}
+{{(T.add_effect(r,"",10, parent =c.me.get_effect('Firey Shackles'),desc= "Restrained.\n You take 2d6 fire damage at the start of your turn.") if not saved else "") if s and c and c.me else None}}
+{{eff= (c.me.get_effect('Firey Shackles') if not saved else "") if s and c and c.me else None}}
+{{f'-f "Effect {name}: | {eff} "' if not saved else '' if s else None}}
+-f "{{cc}}{{"" if i else " (-1)" if v else ""}}|{{"Ignored" if i else cc_str(cc) if C else "None"}}"
+-footer "{{f"{T}\n" if T else ""}} {{H}} | By @""Holy Crusader" -color <color> -thumb <image>
