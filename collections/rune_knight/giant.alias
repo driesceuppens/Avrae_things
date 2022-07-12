@@ -1,0 +1,4 @@
+embed <drac2>
+help = f''' -title "This alias requires an argument to be passed." -desc "The list of arguments you can pass can be found with `!help giant`" -color {color} -thumb {image} '''
+return help
+</drac2>

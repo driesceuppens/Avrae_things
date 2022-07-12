@@ -1,0 +1,3 @@
+To activate the ability use `!twilight [-i]` granting you an effect in combat and using a use of a counter named `"Channel Divinity"`.  
+To give someone temporary hp you use `!twilight heal|temp|thp [-t <target>]` which will ensure that the combatant does not get more thp then what they already had.  
+	To remove an effect you use `!twilight [effect|clear] -t target -effect <effect>` with `effect` being the name of the effect to be removed.

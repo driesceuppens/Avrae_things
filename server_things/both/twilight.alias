@@ -1,45 +1,66 @@
 <drac2>
 ch = character()
-cc = "Channel Divinity"
-effectName = "Twilight things"
 c = combat()
-args = argparse(&ARGS&)
-com = c and c.me
-target = args.last("t", "")
-effect = args.last("effect", "")
-base = f"""embed -color {color} -thumb {image}"""
-lvl = int(get("ClericLevel", 0))
-subclass = load_json(get("subclass", "{}")).get("ClericLevel", "").lower() == "twilight"
-i = "-i" in &ARGS&
-v = (lvl > 1 and subclass) or i
-heal = vroll(f"1d6+{lvl}")
-if not v:
-	return base + f""" -title "You are not a level 2 twilight cleric." """
-
-if not i and ch.cc_exists(cc):
-	if not ch.get_cc(cc):
-		return base + f""" -title "{name} is out of uses for {cc}" -f "{cc}|{ch.cc_str(cc)}" """
-
-if not com:
-	return base + f""" -title "please use this alias in combat" """
-
-
-if sEffect := com.get_effect(effectName):
-	if combatant := c.get_combatant(target):
-		set = combatant.set_temp_hp(heal.total) if combatant.temp_hp() < heal.total else False
-		base += f""" -f "{combatant.name}|{heal} THP!" """ if set else ""
-		combatant.remove_effect(effect) if combatant.get_effect(effect) else ""
-		base += f""" -f "{combatant.name}|removed effect {combatant.get_effect(effect).name if combatant.get_effect(effect) else effect}" """ if effect else ""
-	else:
-		base += f""" -f "{target}|{heal} THP!" -f "{target}|removed {effect}." """
+if c:
+	v = c.me
 else:
-	base += f""" -desc "DESC" -title "{name} uses {get("their", "their")} {cc}!" """
-	com.add_effect(effectName, "", 10, desc="You grant it temporary hit points equal to 1d6 plus your cleric level.\n- You end one effect on it causing it to be charmed or frightened.")
-	base += f""" -f "{name}|Added the {effectName}." """
+	v = c
+embed = "embed "
+error = f"help {ctx.alias} -here"
+cd_desc = """You can use your Channel Divinity to refresh your allies with soothing twilight.
 
-if not i:
-	ch.mod_cc(cc, -1)
-if ch.cc_exists(cc):
-	base += f""" -f "{cc}|{ch.cc_str(cc)} {"(-1)" if not i else""}" """
-return base
+As an action, you present your holy symbol, and a sphere of twilight emanates from you. The sphere is centered on you, has a 30-foot radius, and is filled with dim light. The sphere moves with you, and it lasts for 1 minute or until you are incapacitated or die. Whenever a creature (including you) ends its turn in the sphere, you can grant that creature one of these benefits:
+
+- You grant it temporary hit points equal to 1d6 plus your cleric level.
+- You end one effect on it causing it to be charmed or frightened."""
+cc = "Channel Divinity"
+args = argparse(&ARGS&)
+args_list = &ARGS&
+help = any(i in "help?" for i in args_list)
+if help:
+	return error
+i = args.last("i", default=False, type_=bool)
+target = args.last("t")
+subclass = load_json(get("subclass", "{}")).get("ClericLevel", "").lower() == "Twilight".lower()
+if not v:
+	if not subclass and not i:
+		err("Be the right subclass maybe?")
+	if not i:
+		if not ch.get_cc(cc):
+			err(f"No uses of {cc} left")
+		ch.mod_cc(cc, -1)
+		embed += f""" -f "{cc}|{ch.cc_str(cc)} (-1)" """
+	elif ch.cc_exists(cc):
+		embed += f""" -f "{cc}|{ch.cc_str(cc)}" """
+	return embed + f""" -title "{name} uses {get('their', 'their')} {cc}" -desc "{cd_desc}" -thumb {image} -color {color} """
+v = subclass or i
+self_effect = c.me.get_effect("Twilight Sanctuary") or False
+effect_desc = "Whenever a creature ends it's turn within 30 feet of you you can.\n- You grant it temporary hit points equal to 1d6 plus your cleric level.\n- You end one effect on it causing it to be charmed or frightened."
+if v:
+	# first if there is no effect add it onto them and use the cc
+	if not self_effect:
+		c.me.add_effect("Twilight Sanctuary", '', duration=10, desc = effect_desc)
+		embed += f""" -title "{name} uses {get('their', 'their')} {cc}!" -desc "{cd_desc}" -f "{name}|**Effect:** {effect_desc}" -thumb {image} -color {color} """
+		if not i:
+			ch.mod_cc(cc, -1)
+			embed += f""" -f "{cc}|{ch.cc_str(cc)} (-1)" """
+		elif ch.cc_exists(cc):
+			embed += f""" -f "{cc}|{ch.cc_str(cc)}" """
+		return embed
+	# Checking if we need to heal
+	if args_list[0].lower() in "healtemphp" and (combatant := c.get_combatant(target)):
+		current_temp_hp = combatant.temp_hp
+		temp_hp_roll = vroll(f"1d6 + {get('ClericLevel', 0)}")
+		if temp_hp_roll.total > current_temp_hp:
+			combatant.set_temp_hp(temp_hp_roll.total)
+		embed += f""" -f "temporary HP|**Roll:** {temp_hp_roll}\n{'Changed' if temp_hp_roll.total > current_temp_hp else 'Did not change'} the temp hp." -footer "{combatant.name}: {combatant.hp_str()}" """
+		return embed + f" -color {color} "
+	# checking if we need to remove an effect
+	if args_list[0].lower() in "effectclear" and (combatant := c.get_combatant(target)):
+		effect = args.last("effect", default = "")
+		effect = combatant.remove_effect(effect)
+		embed += f""" -desc "Removed effect {args.last('effect', default = '')} from {combatant.name}" """
+		return embed + f" -color {color} "
+	return error
+return error
 </drac2>

@@ -1,0 +1,357 @@
+<drac2>
+# getting some arg stuff out of the way
+args_list = &ARGS&
+args_string = &*&
+args = argparse(args_list)
+args_list = [arg for arg in args_list if not arg.startswith('-')] # removing all flags so I can pretend argparse is exhaustive
+
+# lets get some help in first I guess
+help = args.last('h') or args.last('help') or 'help?' in args_string
+if help:
+	return f'help {ctx.alias} -here'
+help = f'help {ctx.alias} -here'
+
+# we want to load the json for the right subclass, getting the name from the subclass cvar
+subclass_name = load_json(get('subclass', '{}')).get('PaladinLevel', '').lower()
+json_cvar_or_uvar = load_json(get('paladin_subclasses', '{"name": ""}'))
+if json_cvar_or_uvar['name'] == subclass_name:
+	json = json_cvar_or_uvar
+# now we want to load the svars. I know it's a mess but it works so... I'll rewrite it later
+# yes this is O(n^2) but also, hopefully people won't make n too big or it's their fault I guess?
+# okay I'm going to rework this anyway so soon to be scrapped
+else:
+	svar_json = load_json(get_svar('paladin_subclasses', '{}'))
+	if typeof(svar_json) == 'SafeList':
+		for adress in svar_json:
+			gvar_dict_or_list = load_json(get_gvar(adress))
+			if typeof(gvar_dict_or_list) == 'SafeList':
+				for j in gvar_dict_or_list:
+					if j['name'] == subclass_name:
+						json = j
+						break
+				else:
+					continue
+				break
+			else:
+				if gvar['name'] == subclass_name:
+					json = gvar
+					break
+		else:
+			return help
+	elif svar_json['name'] == subclass_name:
+		json = svar_json
+	else:
+		return help
+
+# now to select which ability/channel divinity you are using
+ability_list = json.keys()
+ability_list.remove('name')
+used_ability = args_list[0] if args_list else ability_list[0]
+json = json[used_ability]
+
+"""
+Okay now we can do some actual aliasing things
+"""
+# setting some things that sill be important or useful a lot
+footer = f' -footer "use !help {ctx.alias}" for more help.'
+desc = json['desc']
+their = get('their', 'their')
+title = f' -title "{name} uses {their} {used_ability}!" '
+embed = f'embed -thumb {image} -color {color}'
+comb = c.get_combatant
+newline = '\n'
+
+# character specific things
+ch = character()
+c = combat()
+current = c.current if c else None
+me = c.me if c else None
+book = ch.spellbook
+level = int(get('PaladinLevel', '0')) >= json['required_level']
+
+# who to target and what to do with them
+targets = args.get('t', default=[]) if not json.get('targets') == 'self' else [name]
+
+# other args to this party
+adv = args.adv()
+ignore = args.lase('i', default=False, type_=bool) or 'i' in args_list
+dc = args.last('dc', default=None, type_=int) or book.dc
+do_with = args.last('with')
+targetable_races = args.get('races', []) + json.get('races', [])
+bonus = '+' + args.join('b', '+') or ''
+bonus_damage = '+' + args.join('d', '+') or ''
+
+# hit/miss and pass/fail
+hit_or_miss = args.adv(boolwise=True, custom = {'adv': 'hit', 'dis': 'miss'})
+pass_or_fail = args.adv(boolwise=True, custom = {'adv': 'pass', 'dis': 'fail'})
+
+# setting up logic for the resources
+if (cc := json['counter']):
+	cc_name = cc['name']
+	cc_value = cc['value']
+slot_if_not_cc = json.get('slot_if_not_cc', False)
+if (slot := json.get('slot')):
+	slot_level = slot.get('level')
+	slot_value = slot.get('value')
+
+# logic for being able to use the ability
+use_slot = False
+use_cc = False
+if ch.cc_exists(cc_name) or book.get_slots(slot_level):
+	cc_ex = True
+	if slot_if_not_cc:
+		if ch.get_cc(cc_name) >= cc_value:
+			able = level
+			use_cc = True
+		else:
+			able = level and book.get_slots(slot_level) >= slot_value
+			use_slot = True
+	elif ch.get_cc(cc_name) >= cc_value:
+		able = level
+		use_cc = True
+	else:
+		able = level
+	able = able or ignore
+else:
+	cc_ex = False
+	able = ignore
+if not able:
+	return
+# setting up a save object
+save = json.get('save', False)
+if save:
+	save_ability = do_with or save.get('ability')
+	save_dc = save.get('DC', dc)
+	save_damage = save.get('damage')
+	if save_damage:
+		save_damage += bonus_damage
+	save_for_half = save.get('half')
+	save_effect = save.get('effect')
+	save_each = save.get('each')
+
+# setting up a check object
+check = json.get('check', False)
+if check:
+	check_skill = do_with or check.get('skill')
+	check_dc = check.get('DC', dc)
+	check_damage = check.get('damage')
+	if check_damage:
+		check_damage += bonus_damage
+	check_for_half = check.get('half')
+	check_effect = check.get('effect')
+	chech_each = check.get('each')
+
+
+# grabbing the damage
+damage = json.get('damage')
+if damage:
+	damage_string = damage.get('damage_string') + bonus_damage
+	damage_each = damage.get('each')
+
+# effect stuff
+effect_data = json.get('effect', False)
+if effect_data:
+	effect_name = effect_data.get('name')
+	effect_args = effect_data.get('args')
+	effect_desc = effect_data.get('desc')
+	effect_duration = effect_data.get('duration')
+	effect_conc = effect_data.get('conc', False)
+	effect_parent = effect_data.get('parent', '')
+	effect_end = effect_data.get('end', False)
+ieffect_data = json.get('ieffect', False)
+if ieffect_data:
+	ieffect_name = ieffect_data.get('name')
+	ieffect_args = ieffect_data.get('args')
+	ieffect_desc = ieffect_data.get('desc')
+	ieffect_duration = ieffect_data.get('duration')
+	ieffect_conc = ieffect_data.get('conc', False)
+	ieffect_parent = ieffect_data.get('parent', '')
+	ieffect_end = ieffect_data.get('end', False)
+if save_effect:
+	save_effect_name = save_effect.get('name')
+	save_effect_args = save_effect.get('args')
+	save_effect_desc = save_effect.get('desc')
+	save_effect_duration = save_effect.get('duration')
+	save_effect_conc = save_effect.get('conc', False)
+	save_effect_parent = save_effect.get('parent', '')
+	save_effect_end = save_effect.get('end', False)
+if check_effect:
+	check_effect_name = check_effect.get('name')
+	check_effect_args = check_effect.get('args')
+	check_effect_desc = check_effect.get('desc')
+	check_effect_duration = check_effect.get('duration')
+	check_effect_conc = check_effect.get('conc', False)
+	check_effect_parent = check_effect.get('parent', '')
+	check_effect_end = check_effect.get('end', False)
+</drac2>
+<drac2>
+	if give_help:
+		return
+	# return early if not able to use the ability
+	if not able:
+		return embed + footer + f' -title "{name} is not able to use {used_ability}" '
+
+	# what if not combat? will be handled in the block below
+	if not me:
+		return
+	"""
+	okay we have combat, time to do a lot of things conditionally
+	We need saves, checks, damage, effects but first self effect
+	"""
+	meta = {}
+	footer = []
+	# I should make the effect args string too, but that is hard af
+	if damage and damage_each:
+		damage_each_roll = vroll(damage_string)
+		meta['damage'] = damage_each_roll
+	if save_damage and save_each:
+		save_each_damage = vroll(save_damage)
+		meta['save_damage'] = save_each_damage
+	if check_damage and check_each:
+		check_each_damage = vroll(check_damage)
+		meta['check_damage'] = check_each_damage
+	if effect_data:
+		meta['effect'] = f'**Effect**: {effect_name}[{effect_duration} rounds]\n- {effect_desc}'
+	if ieffect_data:
+		meta['ieffect'] = f'**Effect**: {ieffect_name}[{ieffect_duration} rounds]\n- {ieffect_desc}'
+	meta['DC'] = dc
+	embed += f""" -f "Meta|{newline.join([f'**{i}**: {j}' for i, j in meta.items()])}" """
+
+	me_meta = ''
+	if ieffect_data:
+		me.add_effect(ieffect_name, ieffect_args, duration = ieffect_duration, end = ieffect_end, conc = ieffect_conc, desc = ieffect_desc)
+		me_meta += f'**Effect**: {ieffect_name}[{ieffect_duration} rounds]\n- {ieffect_desc}'
+		embed += f""" -f "{combatant.name}|{me_meta}" """
+
+	for target in targets:
+		targ_args = target.split('|')[-1] if '|' in target else []
+		target = target.split('|')[0]
+		if not (combatant := comb(target)):
+			continue
+		# adding some target context
+		parsed_targ_args = argparse(targ_args)
+		args.add_contect(combatant.name, parsed_targ_args)
+		target_meta = ''
+		target_pass_or_fail = pass_or_fail or args.adv(boolwise=True, custom = {'adv': 'pass', 'dis': 'fail'})
+		targ_adv = adv or args.adv()
+		if save:
+			if target_pass_or_fail is None:
+				targ_save = combatant.save(save_ability, adv = targ_adv)
+				did_save = targ_save.total >= save_dc
+				save_type = 'Success!' if did_save else 'Fail!'
+			elif target_pass_or_fail:
+				targ_save = 'automatic'
+				did_save = True
+				save_type = 'Success'
+			else:
+				targ_save = 'automatic!'
+				did_save = False
+				save_type = 'Fail!'
+			target_meta += f'**{save_ability.upper()} save** {targ_save} {save_type}'
+			if not did_save:
+				if save_damage:
+					if save_each:
+						targ_damage = combatant.damage(save_damage).damage
+					else:
+						targ_damage = f'**Damage**: {save_each_damage}'
+						combatant.damage(f'{save_each_damage.total}')
+					target_meta += f'{targ_damage}'
+					footer.append(f'{combatant.name} {combatant.hp_str()}')
+				target_meta += '\n' if save_damage and save_effect else ''
+				if save_effect:
+					combatant.add_effect(save_effect_name, save_effect_args, parent = save_effect_parent, duration = save_effect_duration ,end = save_effect_end, conc = save_effect_conc, desc = save_effect_desc)
+					target_meta += f'**Effect**: {save_effect_name}[{save_effect_duration} rounds]\n- {save_effect_desc}'
+			else:
+				if save_damage and save_for_half:
+					if save_each:
+						targ_damage = combatant.damage(f'{save_damage} /2').damage
+					else:
+						targ_damage = f'**Damage**: {save_damage_each} halved'
+						combatant.damage(f'{save_damage.total // 2}')
+					target_meta += f'{targ_damage}'
+					footer.append(str(combatant))
+			embed += f""" -f "{combatant.name}|{target_meta}" """
+		target_meta = ''
+		if damage:
+			if damage_each:
+				targ_damage = combatant.damage(damage_string).damage
+			else:
+				targ_damage = f'**Damage**: {damage_each_roll}'
+				combatant.damage(f'{damage_each_roll.total}')
+			target_meta += f'{targ_damage}'
+			footer.append(str(combatant))
+			embed += f""" -f "{combatant.name}|{target_meta}" """
+		target_meta = ''
+		if effect_data:
+			combatant.add_effect(effect_name, effect_args, duration = effect_duration, conc = effect_conc, end = effect_end, parent = effect_parent, desc = effect_desc)
+			target_meta += f'**Effect**: {effect_name}[{effect_duration} rounds]\n- {effect_desc}'
+			embed += f""" -f "{combatant.name}|{target_meta}" """
+		if check:
+			if target_pass_or_fail is None:
+				aliasSkill = [j for i,j in character().skills if i == check_skill][0]
+				targ_check = aliasSkill.d20(base_adv=adv)
+				targ_check += '+' + args.join('b', '+') if args.last('b') else ''
+				targ_check = vroll(targ_check)
+				did_pass = targ_check.total >= check_dc
+				check_type = 'Success!' if did_pass else 'Fail!'
+			elif target_pass_or_fail is True:
+				did_pass = True
+				check_type = 'Success!'
+				targ_check = 'automatic'
+			else:
+				did_pass = False
+				check_type = 'Fail!'
+				targ_check = 'automatic'
+			if not did_pass:
+				if check_effect:
+					combatant.add_effect(check_effect_name, check_effect_args, duration=check_effect_duration, end=check_effect_end, parent=check_effect_parent, desc=check_effect_desc, conc=check_effect_conc)
+					target_meta += f'**Effect**: {check_effect_name}[{check_effect_duration} rounds]\n- {check_effect_desc}'
+				target_meta += '\n' if check_damage and check_effect else ''
+				if check_damage:
+					if check_each:
+						targ_damage = combatant.damage(f'{check_damage}').damage
+					else:
+						targ_damage = f'**Damage**: {check_each_damage}'
+						combatant.damage(check_each_damage.total)
+					target_meta += f'{targ_damage}'
+			else:
+				if check_for_half:
+					if check_each:
+						targ_damage = combatant.damage(f'{check_damage} /2').damage
+					else:
+						targ_damage =  f'**Damage**: {check_each_damage} halved'
+						combatant.damage(f'{check_each_damage.total // 2}')
+					target_meta += f'{targ_damage}'
+			embed += f""" -f "{combatant.name}|{target_meta}" """
+		args.remove_context(combatant.name)
+</drac2>
+<drac2>
+# okay so now we consume the cc or slots as needed I guess
+if give_help:
+	return
+if not able:
+	return
+if not cc_ex:
+	return
+if ignore:
+	if use_cc:
+		embed += f""" -f "{cc_name}|{ch.cc_str(cc_name)}" """
+	if use_slot:
+		embed += f""" -f "Spell slots|{book.slots_str(slot_level)}" """
+else:
+	if use_cc:
+		ch.mod_cc(cc_name, - cc_value)
+		embed += f""" -f "{cc_name}|{ch.cc_str(cc_name)} (-1)" """
+	if use_slot:
+		book.use_slot(slot_level)
+		embed += f""" -f "Spell slots|{book.slots_str(slot_level)} (-1)" """
+</drac2>
+<drac2>
+if give_help:
+	return
+if not able:
+	return
+if not cc_ex:
+	return
+return embed
+</drac2>
