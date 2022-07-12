@@ -1,0 +1,36 @@
+embed <drac2>
+base = f' -color {color} -thumb {image} -desc "You have learned how to imbue yourself with the might of giants. As a bonus action, you magically gain the following benefits, which last for 1 minute: \n \n - If you are smaller than Large, you become Large, along with anything you are wearing. If you lack the room to become Large, your size doesn\'t change.\n - You have advantage on Strength checks and Strength saving throws. \n - Once on each of your turns, one of your attacks with a weapon or an unarmed strike can deal an extra 1d6 damage to a target on a hit.\n \n You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses of it when you finish a long rest." '
+cc = "Giant's Might"
+i = '-i' in &ARGS&
+lvl = int(character().levels.get("Fighter",0))
+v = character().cc_exists(cc) and lvl >= 3 and character().get_cc(cc) >= 1
+if lvl > 17:
+  size = "huge"
+  dam = "1d10"
+elif lvl > 9:
+  size = "large"
+  dam = "1d8"
+else:
+  size = "large"
+  dam = "1d6"
+if i or v:
+  if i:
+    change = ''
+  else:
+    character().mod_cc(cc,-1,False)
+    change = '(-1)'
+  base += f' -title "{name} Uses their giants might and becomes large." '
+  if character().cc_exists(cc):
+    base += f' -f "Remaining uses of Giants Might|{character().cc_str(cc)} {change}" '
+  base += f' -footer "Class feature | TCoE 45" '
+else:
+  err(f' "You do not have this ability" ')
+if combat() and combat().me:
+  if lvl > 17:
+    combat().me.add_effect("Giant's Might", f'''Damage bonus: {dam}''', 10, desc="Your size increases to large and you deal extra on attacks.\n Advantage on Strength checks and saving throws and your reach increases by 5 feet.")
+    base += f' -f "{name}|Damage bonus: {dam}, advantage on Strength checks and saving throws and your reach increases by 5 feet." '
+  else:
+    combat().me.add_effect("Giant's Might", f'''Damage bonus: {dam}''', 10, desc="Your size increases to large and you deal extra on attacks.\n Advantage on Strength checks and saving throws.")
+    base += f' -f "{name}|Damage bonus: {dam}, advantage on Strength checks and saving throws." '
+return base
+</drac2>
