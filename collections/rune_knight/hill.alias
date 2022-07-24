@@ -1,9 +1,10 @@
 embed {{F,a,i,c,H,cc=int(get('FighterLevel',0)), argparse(&ARGS&),'-i' in &ARGS&,combat(),f'!giant hill [-i]',"Hill Rune"}}
-{{v,C=cc_exists(cc) and get_cc(cc)>0,cc_exists(cc)}}
-{{'' if i else mod_cc(cc,-1) if v else err(f'No {cc}s remaining.\n**{H}** \n\nIf you have this rune, but not the custom counter use `!cc create "Hill Rune" -min 0 -max 1+(FighterLevel/15) -reset short -type bubble.`')}} 
+{{ch = character()}}
+{{v,C=ch.cc_exists(cc) and ch.get_cc(cc)>0, ch.cc_exists(cc)}}
+{{'' if i else ch.mod_cc(cc,-1) if v else err(f'No {cc}s remaining.\n**{H}** \n\nIf you have this rune, but not the custom counter use `!cc create "Hill Rune" -min 0 -max 1+(FighterLevel/15) -reset short -type bubble.`')}} 
 -title "<name> {{"invokes" if i or v else "tries to invoke"}} their {{cc}}!" 
 -desc "{{"You can invoke the rune as a bonus action, gaining resistance to bludgeoning, piercing, and slashing damage for 1 minute. " if F>6 and 'Rune Knight' in get('subclass','') else err (f'**You are not a high enough level rune knight to use this feature!**')  if F>2 and 'Rune Knight' in get('subclass','') else err(f'You are not a Rune Knight! \nIf you are, set up your level using `!level fighter rune`')}}"
 {{c.me.add_effect('Hill Rune',f'-resist slashing -resist bludgeoning -resist piercing',10) if c and c.me and (v or i) else ''}}
 -f "Effect|{{c.me.get_effect("Hill Rune") if c and c.me and (v or i) else "Not in Initiative"}}"
--f "{{cc}}{{"" if i else " (-1)" if v else ""}}|{{"Ignored" if i else cc_str(cc) if C else "None"}}" 
+-f "{{cc}}{{"" if i else " (-1)" if v else ""}}|{{"Ignored" if i else ch.cc_str(cc) if C else "None"}}" 
 -footer "{{H}} | Made by @""Holy Crusader" -color <color> -thumb <image>
