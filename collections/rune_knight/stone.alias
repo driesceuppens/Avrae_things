@@ -1,4 +1,11 @@
 embed {{F,a,i,c,H,cc=int(get('FighterLevel',0)), argparse(&ARGS&),'-i' in &ARGS&,combat(),f'!giant stone [-i] [-t target]',"Stone Rune"}} {{DC=8+proficiencyBonus+constitutionMod}}
+<drac2>
+ch = character()
+cc_exists = ch.cc_exists
+mod_cc = ch.mod_cc
+cc_str = ch.cc_str
+get_cc = ch.get_cc
+</drac2>
 {{v,T=cc_exists(cc) and get_cc(cc)>0,a.last("t")}} {{T= c.get_combatant(T) if c and T else None}}  
 {{s=T.save("wis") if c and T else None}}{{C=cc_exists(cc)}}
 -title "<name> {{"invokes" if v else "tries to invoke"}} the stone rune on {{T.name if T else "the Target"}}!"

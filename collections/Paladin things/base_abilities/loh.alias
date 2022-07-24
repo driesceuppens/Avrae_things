@@ -1,19 +1,20 @@
 embed {{P,type,a,i,c,Help,cco,h,g  = get("PaladinLevel",0), "&1&", argparse(&ARGS&), '-i' in &ARGS&, combat(), f'[disease|poison|heal #] [-i] [-t target]',"Lay on Hands", "&*&" in "help?",get_gvar("ee66262b-3bde-4e7e-8078-5d1c03e21d14")}}
-{{amt,pclass,lh,cd,cp,target,cc = -int("&2&" if '&2&'.isdigit() else type if type.isdigit() else 1),int(P) >= 1,type in 'healing' or type.isdigit(),type in 'disease',type in 'poison',a.last("t"),cco if cc_exists(cco) else "Lay on Hands Pool"}}
+{{ch = character()}}
+{{amt,pclass,lh,cd,cp,target,cc = -int("&2&" if '&2&'.isdigit() else type if type.isdigit() else 1),int(P) >= 1,type in 'healing' or type.isdigit(),type in 'disease',type in 'poison',a.last("t"),cco if ch.cc_exists(cco) else "Lay on Hands Pool"}}
 {{target,call = c.get_combatant(target) if c and target else None, cd or cp}}
 {{ed,ep = target.get_effect('disease') if target else '', target.get_effect('poison') if target else ''}}
 {{f'-title "Lay on Hands{" Help" if h else ""}!"'}}
 -color <color> -thumb <image>
 {{sroll,times =(f'{amt}' if not call else "0")+' [heal]',-amt}}
 {{amt = 0 if h else amt*5 if call else amt}}
-{{cg = get_cc(cc)>=-amt if not h else ""}}
-{{'' if i or h else mod_cc(cc,amt) if cg else err(f'Not enough points of Lay on Hands remaining.\n {Help}\n You only have {get_cc(cc)} Points left')}}
+{{cg = ch.get_cc(cc)>=-amt if not h else ""}}
+{{'' if i or h else ch.mod_cc(cc,amt) if cg else err(f'Not enough points of Lay on Hands remaining.\n {Help}\n You only have {ch.get_cc(cc)} Points left')}}
 {{f'-desc {g}' if h else f'-desc "{name} heals {times if times > 1 else "a" if times == 1 else ""} {"Disease Condition(s)" if cd else "Poison Condition(s)" if cp else ""} using {-amt} points of Lay on Hands!"' if pclass or i else err(f'You do not have this Ability!\n {Help}')}}
 {{droll = target.damage(sroll).damage if target else (sroll)}}
 {{f'-f "{target.name} | {droll}"' if target else f'-f " "Meta" | Damage: {droll}"' if not h else ''}}
 {{f'-f "Effect|{"Disease" if cd else "Poison"} effect removed from {target.name if target else "subject"}."' if call else ''}}
 {{target.remove_effect('disease') if ed and call else target.remove_effect('poison') if ep and call else ''}}
-{{h or f'-f "{cc} {f"({amt})" if not i else ""}| {cc_str(cc)}"'}}
+{{h or f'-f "{cc} {f"({amt})" if not i else ""}| {ch.cc_str(cc)}"'}}
 -footer "{{f"{target}\n" if target else ""}}!loh {{Help}} | Made by @""Kortar#9227, Fixed by @""Derixyleth#0636"
 
 #Complete credit to @kortar#9227, I did not make this alias myself.

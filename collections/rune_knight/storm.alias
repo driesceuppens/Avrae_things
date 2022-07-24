@@ -1,4 +1,11 @@
 embed {{F,a,i,c,H,cc=int(get('FighterLevel',0)), argparse(&ARGS&),'-i' in &ARGS&,combat(),f'!giant storm [-i]',"Storm Rune"}}
+<drac2>
+ch = character()
+cc_exists = ch.cc_exists
+mod_cc = ch.mod_cc
+cc_str = ch.cc_str
+get_cc = ch.get_cc
+</drac2>
 {{v,C=cc_exists(cc) and get_cc(cc)>0,cc_exists(cc)}} 
 {{'' if i else mod_cc(cc,-1) if v else err(f'No {cc}s remaining.\n**{H}** \n\nIf you have this rune, but not the custom counter use `!cc create "Storm Rune" -min 0 -max 1+(FighterLevel/15) -reset short -type bubble.`')}} 
 -title "<name> {{"invokes" if i or v else "tries to invoke"}} their {{cc}}!" 

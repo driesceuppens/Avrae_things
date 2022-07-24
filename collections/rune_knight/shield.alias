@@ -1,4 +1,11 @@
 embed {{F,a,i,c,H,cc=int(get('FighterLevel',0)), argparse(&ARGS&),'-i' in &ARGS&,combat(),f'!giant shield [-i] ',"Runic Shield"}}
+<drac2>
+ch = character()
+cc_exists = ch.cc_exists
+mod_cc = ch.mod_cc
+cc_str = ch.cc_str
+get_cc = ch.get_cc
+</drac2>
 {{v,C=cc_exists(cc) and get_cc(cc)>0,cc_exists(cc)}}
 -title "<name> {{"invokes" if i or v else "tries to invoke"}} their {{cc}}!" 
 -desc "{{"You learn to invoke your rune magic to protect your allies. When another creature you can see within 60 feet of you is hit by an attack roll, you can use your reaction to force the attacker to reroll the d20 and use the new roll." if F>6 and 'Rune Knight' in get('subclass','') else err (f'**You are not a high enough level rune knight to use this feature!**')  if F>2 and 'Rune Knight' in get('subclass','') else err(f'You are not a Rune Knight! \nIf you are, set up your level using `!level fighter rune`')}}"
