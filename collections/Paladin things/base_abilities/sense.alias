@@ -10,7 +10,7 @@ if len(&ARGS&) > 0 and &ARGS&[0] in "help?":
 	return f"""help {ctx.alias} -here"""
 
 if not v:
-  	return f''' -thumb {image} -color {color} -title "{name}  is not a paladin!" '''
+  	return f''' -thumb {image} -color {color} -title "{name} is not a paladin!" '''
 they,them,their,theirs = get('they','they'), get('them','them'), get('their','their'), get('theirs','theirs')
 base = f'''embed -thumb {image} -color {color} '''
 change = ''
